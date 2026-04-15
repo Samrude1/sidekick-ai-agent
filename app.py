@@ -162,24 +162,29 @@ button.stop:hover {
 }
 
 /* Chatbot inner fixes to brutally eliminate the thread lines and weird blockquotes */
-.chatbot [class*="avatar-container"],
-.chatbot [class*="thread-line"],
-.chatbot [class*="line"] { 
+.avatar-container { 
     display: none !important; 
     width: 0 !important;
-    opacity: 0 !important;
 }
 
-/* UNIVERSAL border-left removal within chatbot */
-.chatbot * {
-    border-left: none !important;
+/* 
+   Gradio 5 uses a background on a pseudo-element for the line, 
+   not a border. This is the "forced" fix for that.
+*/
+.message-row::before {
+    display: none !important;
+    content: none !important;
+    background: transparent !important;
+    background-color: transparent !important;
 }
 
-/* Kill any pseudo elements that might be rendering the line */
+/* UNIVERSAL removal of any vertical element/line within chatbot */
 .chatbot *::before, 
 .chatbot *::after {
     display: none !important;
     content: none !important;
+    background: transparent !important;
+    background-color: transparent !important;
 }
 
 /* Nuke any blockquote styling */
@@ -227,15 +232,22 @@ if os.environ.get("SPACE_ID"):
 # Forced pinstripe cleanup via JavaScript
 force_js = """
 function() {
+    const style = document.createElement('style');
+    style.innerHTML = `
+        .message-row::before, .message-row::after { display: none !important; background: none !important; }
+        .avatar-container { display: none !important; width: 0 !important; }
+        .chatbot blockquote { border-left: none !important; padding-left: 0 !important; }
+    `;
+    document.head.appendChild(style);
+
     const observer = new MutationObserver((mutations) => {
         const lines = document.querySelectorAll('.chatbot *, [class*="thread-line"], [class*="line"]');
         lines.forEach(l => {
             if (!l.classList.contains('bot-message')) {
                 l.style.borderLeft = 'none';
+                l.style.background = 'none';
             }
         });
-        const avatars = document.querySelectorAll('[class*="avatar"]');
-        avatars.forEach(a => a.style.display = 'none');
     });
     observer.observe(document.body, { childList: true, subtree: true });
 }
