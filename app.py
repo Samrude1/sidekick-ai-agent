@@ -63,6 +63,10 @@ input, textarea {
     border: 1px solid #333 !important;
     color: white !important;
 }
+h2, .markdown-text {
+    color: #00C2FF !important;
+    text-shadow: 0 0 10px rgba(0, 194, 255, 0.3) !important;
+}
 """
 
 # Startup check for Hugging Face
