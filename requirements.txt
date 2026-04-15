@@ -1,0 +1,11 @@
+langgraph
+langchain-google-genai
+gradio
+playwright
+nest-asyncio
+python-dotenv
+langchain-community
+langchain-experimental
+google-search-results
+wikipedia
+python-dotenv
