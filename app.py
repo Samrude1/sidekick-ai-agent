@@ -168,23 +168,32 @@ button.stop:hover {
 }
 
 /* 
-   Gradio 5 uses a background on a pseudo-element for the line, 
-   not a border. This is the "forced" fix for that.
+   Gradio 5 uses physical div elements for thread lines. 
+   We target them specifically to remove the "striped" background.
 */
-.message-row::before {
-    display: none !important;
-    content: none !important;
-    background: transparent !important;
-    background-color: transparent !important;
+.avatar-container div { 
+    background-color: transparent !important; 
+    display: none !important; 
+}
+
+/* 
+   Markdown horizontal rules (---) cause lines too. 
+   Removing them from the chatbot.
+*/
+.chatbot hr { 
+    display: none !important; 
 }
 
 /* UNIVERSAL removal of any vertical element/line within chatbot */
+.chatbot * {
+    border-left: none !important;
+}
+
 .chatbot *::before, 
 .chatbot *::after {
     display: none !important;
     content: none !important;
     background: transparent !important;
-    background-color: transparent !important;
 }
 
 /* Nuke any blockquote styling */

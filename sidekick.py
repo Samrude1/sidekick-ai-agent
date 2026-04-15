@@ -235,7 +235,7 @@ class Sidekick:
         feedback_raw = result["messages"][-1].content
         feedback_text = extract_text(feedback_raw)
         
-        combined_content = f"{reply_text}\n\n---\n\n**Evaluator Feedback:** {feedback_text.replace('Evaluator Feedback on this answer: ', '')}"
+        combined_content = f"{reply_text}\n\n**Evaluator Feedback:**\n{feedback_text.replace('Evaluator Feedback on this answer: ', '')}"
         combined_reply = {"role": "assistant", "content": combined_content}
         
         return history + [user, combined_reply]
