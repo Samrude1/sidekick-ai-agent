@@ -87,18 +87,18 @@ with gr.Blocks(title="Sidekick AI", theme=gr.themes.Default(primary_hue="blue", 
         reset_button = gr.Button("Reset Session", variant="stop")
         go_button = gr.Button("Execute Task", variant="primary")
 
-    ui.load(setup, [], [sidekick])
+    ui.load(setup, [], [sidekick], api_name=False)
     
     message.submit(
-        process_message, [sidekick, message, success_criteria, chatbot], [chatbot, sidekick]
+        process_message, [sidekick, message, success_criteria, chatbot], [chatbot, sidekick], api_name=False
     )
     success_criteria.submit(
-        process_message, [sidekick, message, success_criteria, chatbot], [chatbot, sidekick]
+        process_message, [sidekick, message, success_criteria, chatbot], [chatbot, sidekick], api_name=False
     )
     go_button.click(
-        process_message, [sidekick, message, success_criteria, chatbot], [chatbot, sidekick]
+        process_message, [sidekick, message, success_criteria, chatbot], [chatbot, sidekick], api_name=False
     )
-    reset_button.click(reset, [], [message, success_criteria, chatbot, sidekick])
+    reset_button.click(reset, [], [message, success_criteria, chatbot, sidekick], api_name=False)
 
 
 if __name__ == "__main__":
