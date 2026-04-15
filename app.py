@@ -170,30 +170,23 @@ button.stop:hover {
     opacity: 0 !important;
 }
 
-/* Kill any pseudo elements that might be rendering the line */
-.chatbot [class*="message"]::before, 
-.chatbot [class*="message"]::after,
-.chatbot [class*="wrap"]::before, 
-.chatbot [class*="wrap"]::after {
-    display: none !important;
-    content: none !important;
-    background: transparent !important;
+/* UNIVERSAL border-left removal within chatbot */
+.chatbot * {
+    border-left: none !important;
 }
 
-/* Nuke any blockquote styling which creates a left vertical line */
+/* Kill any pseudo elements that might be rendering the line */
+.chatbot *::before, 
+.chatbot *::after {
+    display: none !important;
+    content: none !important;
+}
+
+/* Nuke any blockquote styling */
 .chatbot blockquote {
     border-left: none !important;
     margin-left: 0 !important;
     padding-left: 0 !important;
-    color: inherit !important;
-}
-
-/* Reset base wrappers so they don't inherit weird defaults */
-.chatbot [class*="message-wrap"], .chatbot [class*="message-row"] {
-    border: none !important;
-    box-shadow: none !important;
-    padding-left: 0 !important;
-    margin-left: 0 !important;
 }
 
 /* Restore the bubble borders properly on the message itself */
@@ -207,16 +200,24 @@ button.stop:hover {
 .chatbot .bot-message {
     background-color: #ffffff !important;
     border: 1px solid #e5e7eb !important;
-    border-left: 3px solid #111827 !important;
+    border-left: 4px solid #111827 !important; /* This is the ONLY vertical line we want */
     color: #374151 !important;
     padding: 12px 18px !important;
 }
 
 .reset-btn {
-    min-width: 0 !important;
+    min-width: 140px !important;
     padding: 6px 14px !important;
-    margin-top: 15px !important;
+    margin-top: 25px !important;
+    background: transparent !important;
+    border: 1px solid #d1d5db !important;
 }
+
+/* Remove any vertical lines in header or between columns */
+#header .gr-column, #header .gr-row {
+    border: none !important;
+}
+"""
 """
 
 # Startup check for Hugging Face
