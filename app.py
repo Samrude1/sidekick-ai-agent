@@ -30,42 +30,114 @@ def free_resources(sidekick):
         print(f"Exception during cleanup: {e}")
 
 
-# Custom CSS for the "Electric Blue" Premium Theme
+# Custom CSS for the Professional Minimalist Theme
 custom_css = """
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap');
+
 body, .gradio-container {
-    background-color: #0A0A0B !important;
-    color: #E0E0E0 !important;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif !important;
+    background-color: #fdfdfd !important;
+    color: #1a1a1a !important;
 }
+
 .gradio-container {
-    border: none !important;
+    max-width: 1000px !important;
+    margin: 0 auto !important;
 }
-button.primary {
-    background: linear-gradient(90deg, #007BFF 0%, #00C2FF 100%) !important;
-    border: none !important;
-    box-shadow: 0 0 15px rgba(0, 123, 255, 0.4) !important;
+
+/* Typography */
+h2 {
+    font-family: 'Inter', sans-serif !important;
+    font-weight: 600 !important;
+    color: #111111 !important;
+    letter-spacing: -0.02em !important;
+    border-bottom: 1px solid #eaeaea;
+    padding-bottom: 0.5rem;
+    margin-bottom: 1.5rem !important;
+    text-shadow: none !important;
 }
-button.primary:hover {
-    box-shadow: 0 0 25px rgba(0, 194, 255, 0.6) !important;
-    transform: translateY(-1px);
-}
-.chatbot .message {
-    border-radius: 12px !important;
-}
-.chatbot .user-message {
-    background-color: #1A1A1C !important;
-}
-.chatbot .bot-message {
-    background-color: #121214 !important;
-    border-left: 3px solid #00C2FF !important;
-}
+
+/* Inputs */
 input, textarea {
-    background-color: #1A1A1C !important;
-    border: 1px solid #333 !important;
-    color: white !important;
+    background-color: #ffffff !important;
+    border: 1px solid #d4d4d4 !important;
+    border-radius: 6px !important;
+    color: #111111 !important;
+    font-size: 0.95rem !important;
+    transition: all 0.2s ease !important;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.02) !important;
+    padding: 10px 12px !important;
 }
-h2, .markdown-text {
-    color: #00C2FF !important;
-    text-shadow: 0 0 10px rgba(0, 194, 255, 0.3) !important;
+
+input:focus, textarea:focus {
+    border-color: #4a4a4a !important;
+    box-shadow: 0 0 0 1px #4a4a4a !important;
+    outline: none !important;
+}
+
+/* Chatbot Area */
+.chatbot {
+    background: #ffffff !important;
+    border: 1px solid #e0e0e0 !important;
+    border-radius: 8px !important;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.03) !important;
+}
+
+.chatbot .message {
+    border-radius: 6px !important;
+    padding: 14px 18px !important;
+    font-size: 0.95rem !important;
+    line-height: 1.6 !important;
+    margin-bottom: 12px !important;
+}
+
+.chatbot .user-message {
+    background-color: #f7f7f7 !important;
+    border: 1px solid #e0e0e0 !important;
+    color: #111111 !important;
+}
+
+.chatbot .bot-message {
+    background-color: #ffffff !important;
+    border: 1px solid #e0e0e0 !important;
+    border-left: 3px solid #111111 !important;
+    color: #222222 !important;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.02) !important;
+}
+
+/* Buttons */
+button.primary {
+    background: #111111 !important;
+    color: #ffffff !important;
+    border: 1px solid #111111 !important;
+    border-radius: 6px !important;
+    font-weight: 500 !important;
+    letter-spacing: 0.02em !important;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08) !important;
+    transition: all 0.2s ease !important;
+    padding: 12px 24px !important;
+}
+
+button.primary:hover {
+    background: #2a2a2a !important;
+    border-color: #2a2a2a !important;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.12) !important;
+    transform: translateY(-1px) !important;
+}
+
+button.stop {
+    background: #ffffff !important;
+    color: #444444 !important;
+    border: 1px solid #cccccc !important;
+    border-radius: 6px !important;
+    font-weight: 500 !important;
+    transition: all 0.2s ease !important;
+}
+
+button.stop:hover {
+    background: #f0f0f0 !important;
+    color: #111111 !important;
+    border-color: #aaaaaa !important;
 }
 """
 
@@ -74,8 +146,8 @@ if os.environ.get("SPACE_ID"):
     print("Detected Hugging Face environment. Ensuring Playwright is installed...")
     os.system("playwright install chromium")
 
-with gr.Blocks(title="Sidekick AI", theme=gr.themes.Default(primary_hue="blue", neutral_hue="slate"), css=custom_css) as ui:
-    gr.Markdown("## Sidekick AI Agent (Gemini 2026 Edition)")
+with gr.Blocks(title="Sidekick AI", theme=gr.themes.Base(primary_hue="zinc", neutral_hue="zinc"), css=custom_css) as ui:
+    gr.Markdown("## Sidekick AI Agent (Enterprise Edition)")
     sidekick = gr.State(delete_callback=free_resources)
 
     with gr.Row():
