@@ -161,20 +161,42 @@ button.stop:hover {
     margin-right: 15px !important;
 }
 
-/* Fix Chatbot threading lines and empty avatars */
-.chatbot [class*="avatar-container"] { 
+/* Chatbot inner fixes for thread line and empty avatars */
+.chatbot [class*="avatar"] { 
     display: none !important; 
+    width: 0 !important;
 }
-.chatbot [class*="message-wrap"], 
-.chatbot [class*="message-row"],
-.chatbot [class*="message-wrap"] > div,
-.chatbot [class*="message-row"]::before,
-.chatbot [class*="message-wrap"]::before {
-    border-left: none !important;
-    border-right: none !important;
-    padding-left: 0 !important;
+
+/* Aggressively remove thread lines by making them transparent */
+.chatbot * {
+    border-left-color: transparent !important;
+}
+
+/* Restore the bubble borders properly */
+.chatbot .user-message {
+    background-color: #f9fafb !important;
+    border: 1px solid #e5e7eb !important;
+    color: #1f2937 !important;
+}
+
+.chatbot .bot-message {
+    background-color: #ffffff !important;
+    border: 1px solid #e5e7eb !important;
+    border-left-color: #111827 !important;
+    border-left-width: 3px !important;
+    color: #374151 !important;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.02) !important;
+}
+
+.chatbot [class*="message-wrap"] {
     margin-left: 0 !important;
-    box-shadow: none !important;
+    padding-left: 0 !important;
+}
+
+.reset-btn {
+    min-width: 0 !important;
+    padding: 6px 14px !important;
+    margin-top: 15px !important;
 }
 """
 
@@ -184,11 +206,11 @@ if os.environ.get("SPACE_ID"):
     os.system("playwright install chromium")
 
 with gr.Blocks(title="Sidekick AI", theme=gr.themes.Base(primary_hue="slate", neutral_hue="slate"), css=custom_css) as ui:
-    with gr.Row(elem_id="header", equal_height=True):
-        with gr.Column(scale=4):
+    with gr.Row(elem_id="header", equal_height=False):
+        with gr.Column(scale=1):
             gr.Markdown("# ⚡ Sidekick AI Agent (Enterprise Edition)\n*Full Automation Agent for the Modern Enterprise.*")
-        with gr.Column(scale=1, min_width=150):
-            reset_button = gr.Button("Reset session", variant="stop")
+        with gr.Column(scale=0):
+            reset_button = gr.Button("Reset session", variant="stop", elem_classes="reset-btn")
 
     sidekick = gr.State(delete_callback=free_resources)
 
@@ -209,8 +231,7 @@ with gr.Blocks(title="Sidekick AI", theme=gr.themes.Base(primary_hue="slate", ne
                 )
                 go_button = gr.Button("Execute Task", variant="primary")
             
-            with gr.Group():
-                gr.Markdown("<div style='padding: 5px;'><p style='font-size: 0.85em; color: #6b7280; margin: 0; line-height: 1.4;'><i>Note: These are sample queries for the demo project. Feel free to replace them with your own tasks!</i></p></div>")
+            gr.HTML("<div style='padding: 15px; margin-top: 15px; background: #ffffff; border: 1px solid #e5e7eb; border-radius: 8px;'><p style='font-size: 0.88em; color: #6b7280; margin: 0; line-height: 1.5;'><i>Note: These are sample queries for the demo project. Feel free to replace them with your own tasks!</i></p></div>")
 
         with gr.Column(scale=3):
             chatbot = gr.Chatbot(label="Logs & Output", height=650, type="messages", show_label=False)
