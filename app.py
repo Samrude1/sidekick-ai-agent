@@ -153,11 +153,18 @@ with gr.Blocks(title="Sidekick AI", theme=gr.themes.Base(primary_hue="zinc", neu
     with gr.Row():
         chatbot = gr.Chatbot(label="Sidekick conversation", height=450, type="messages")
     with gr.Group():
+        gr.Markdown("<p style='font-size: 0.9em; color: #666; margin-bottom: 5px; padding-left: 5px;'><i>These are sample queries for the demo project. Feel free to replace them with your own tasks!</i></p>")
         with gr.Row():
-            message = gr.Textbox(show_label=False, placeholder="What should I do for you?")
+            message = gr.Textbox(
+                show_label=False, 
+                placeholder="What should I do for you?",
+                value="Find me the top 3 best-rated gyms in Vantaa, Finland."
+            )
         with gr.Row():
             success_criteria = gr.Textbox(
-                show_label=False, placeholder="Define your success criteria (e.g. 'Give me a 5-sentence summary')"
+                show_label=False, 
+                placeholder="Define your success criteria (e.g. 'Give me a 5-sentence summary')",
+                value="Provide a list of 3 gyms with their address and average rating."
             )
     with gr.Row():
         reset_button = gr.Button("Reset Session", variant="stop")
