@@ -1,3 +1,15 @@
+---
+title: Sidekick AI
+emoji: 🚀
+colorFrom: blue
+colorTo: midnightblue
+sdk: gradio
+sdk_version: 5.6.0
+python_version: 3.13
+app_file: app.py
+pinned: false
+---
+
 # Sidekick AI Agent (Gemini Edition)
 
 Welcome to your personal AI Sidekick! Sidekick is a high-performance, standalone multi-agent system designed for autonomous task execution and research.
