@@ -161,36 +161,55 @@ button.stop:hover {
     margin-right: 15px !important;
 }
 
-/* Chatbot inner fixes for thread line and empty avatars */
-.chatbot [class*="avatar"] { 
+/* Chatbot inner fixes to brutally eliminate the thread lines and weird blockquotes */
+.chatbot [class*="avatar-container"],
+.chatbot [class*="thread-line"],
+.chatbot [class*="line"] { 
     display: none !important; 
     width: 0 !important;
+    opacity: 0 !important;
 }
 
-/* Aggressively remove thread lines by making them transparent */
-.chatbot * {
-    border-left-color: transparent !important;
+/* Kill any pseudo elements that might be rendering the line */
+.chatbot [class*="message"]::before, 
+.chatbot [class*="message"]::after,
+.chatbot [class*="wrap"]::before, 
+.chatbot [class*="wrap"]::after {
+    display: none !important;
+    content: none !important;
+    background: transparent !important;
 }
 
-/* Restore the bubble borders properly */
+/* Nuke any blockquote styling which creates a left vertical line */
+.chatbot blockquote {
+    border-left: none !important;
+    margin-left: 0 !important;
+    padding-left: 0 !important;
+    color: inherit !important;
+}
+
+/* Reset base wrappers so they don't inherit weird defaults */
+.chatbot [class*="message-wrap"], .chatbot [class*="message-row"] {
+    border: none !important;
+    box-shadow: none !important;
+    padding-left: 0 !important;
+    margin-left: 0 !important;
+}
+
+/* Restore the bubble borders properly on the message itself */
 .chatbot .user-message {
     background-color: #f9fafb !important;
     border: 1px solid #e5e7eb !important;
     color: #1f2937 !important;
+    padding: 12px 18px !important;
 }
 
 .chatbot .bot-message {
     background-color: #ffffff !important;
     border: 1px solid #e5e7eb !important;
-    border-left-color: #111827 !important;
-    border-left-width: 3px !important;
+    border-left: 3px solid #111827 !important;
     color: #374151 !important;
-    box-shadow: 0 1px 2px rgba(0,0,0,0.02) !important;
-}
-
-.chatbot [class*="message-wrap"] {
-    margin-left: 0 !important;
-    padding-left: 0 !important;
+    padding: 12px 18px !important;
 }
 
 .reset-btn {
