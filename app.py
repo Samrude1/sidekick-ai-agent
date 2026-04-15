@@ -11,6 +11,7 @@ async def setup():
 
 async def process_message(sidekick, message, success_criteria, history):
     # Pass the instance to running superstep
+    # history is now a raw HTML string
     results = await sidekick.run_superstep(message, success_criteria, history)
     return results, sidekick
 
@@ -18,7 +19,7 @@ async def process_message(sidekick, message, success_criteria, history):
 async def reset():
     new_sidekick = Sidekick()
     await new_sidekick.setup()
-    return "", "", None, new_sidekick
+    return "", "", "", new_sidekick
 
 
 def free_resources(sidekick):
@@ -33,6 +34,7 @@ def free_resources(sidekick):
 # Custom CSS for the Professional Minimalist Theme
 custom_css = """
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&display=swap');
 
 body, .gradio-container {
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif !important;
@@ -45,7 +47,7 @@ body, .gradio-container {
     margin: 0 auto !important;
 }
 
-/* Typography */
+/* Header */
 h1 {
     font-weight: 700 !important;
     color: #111827 !important;
@@ -54,77 +56,85 @@ h1 {
     font-size: 2.2rem !important;
 }
 
-h1 + p {
-    color: #6b7280 !important;
-    font-style: italic;
-    font-size: 0.95rem !important;
-    margin-bottom: 1.5rem !important;
-}
-
-h3 {
-    font-weight: 600 !important;
-    color: #374151 !important;
-    font-size: 1.1rem !important;
-    margin-bottom: 0.5rem !important;
-}
-
-/* Inputs */
-input, textarea {
-    background-color: #ffffff !important;
-    border: 1px solid #d1d5db !important;
-    border-radius: 6px !important;
-    color: #1f2937 !important;
-    font-size: 0.95rem !important;
-    transition: all 0.2s ease !important;
-    box-shadow: 0 1px 2px rgba(0,0,0,0.02) !important;
-    padding: 10px 12px !important;
-}
-
-input:focus, textarea:focus {
-    border-color: #9ca3af !important;
-    box-shadow: 0 0 0 1px #9ca3af !important;
-    outline: none !important;
-}
-
-/* Chatbot Area */
-.chatbot {
+/* Custom Log Window Styling - THE PAKKOKEINO */
+#log-window {
     background: #ffffff !important;
     border: 1px solid #e5e7eb !important;
     border-radius: 8px !important;
+    height: 650px !important;
+    overflow-y: auto !important;
+    padding: 0 !important;
     box-shadow: 0 1px 3px rgba(0,0,0,0.05) !important;
-    font-size: 0.95rem !important;
 }
 
-.chatbot .message {
-    border-radius: 6px !important;
-    padding: 14px 18px !important;
-    line-height: 1.6 !important;
-    margin-bottom: 12px !important;
+.log-entry {
+    padding: 20px 25px;
+    border-bottom: 1px solid #f3f4f6;
+    animation: fadeIn 0.3s ease-out;
 }
 
-.chatbot .user-message {
-    background-color: #f9fafb !important;
+.log-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 8px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.8rem;
+}
+
+.log-time {
+    color: #9ca3af;
+}
+
+.log-role {
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    padding: 2px 8px;
+    border-radius: 4px;
+}
+
+.role-user { color: #4b5563; background: #f3f4f6; }
+.role-agent { color: #111827; background: #e5e7eb; border-left: 3px solid #111827; }
+.role-eval { color: #059669; background: #ecfdf5; }
+
+.log-content {
+    font-size: 0.95rem;
+    line-height: 1.6;
+    color: #374151;
+    white-space: pre-wrap;
+}
+
+.feedback-box {
+    font-style: italic;
+    color: #065f46;
+    border-left: 2px solid #10b981;
+    padding-left: 15px;
+    margin-top: 10px;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(5px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* Inputs & Buttons */
+.left-panel {
+    margin-right: 15px !important;
+}
+
+.gr-group {
+    background: #ffffff !important;
     border: 1px solid #e5e7eb !important;
-    color: #1f2937 !important;
+    border-radius: 8px !important;
+    padding: 18px !important;
 }
 
-.chatbot .bot-message {
-    background-color: #ffffff !important;
-    border: 1px solid #e5e7eb !important;
-    border-left: 3px solid #111827 !important;
-    color: #374151 !important;
-    box-shadow: 0 1px 2px rgba(0,0,0,0.02) !important;
-}
-
-/* Buttons */
 button.primary {
     background: #111827 !important;
     color: #ffffff !important;
-    border: none !important;
     border-radius: 6px !important;
     font-weight: 500 !important;
-    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05) !important;
-    transition: all 0.2s ease !important;
     padding: 10px 20px !important;
 }
 
@@ -133,103 +143,11 @@ button.primary:hover {
     transform: translateY(-1px) !important;
 }
 
-button.stop {
-    background: #ffffff !important;
-    color: #374151 !important;
-    border: 1px solid #d1d5db !important;
-    border-radius: 6px !important;
-    font-weight: 500 !important;
-    transition: all 0.2s ease !important;
-    padding: 8px 16px !important;
-}
-
-button.stop:hover {
-    background: #f3f4f6 !important;
-    color: #111827 !important;
-    border-color: #9ca3af !important;
-}
-
-/* General Layout Tweaks */
-.gr-group {
-    background: #ffffff !important;
-    border: 1px solid #e5e7eb !important;
-    border-radius: 8px !important;
-    padding: 18px !important;
-}
-
-.left-panel {
-    margin-right: 15px !important;
-}
-
-/* Chatbot inner fixes to brutally eliminate the thread lines and weird blockquotes */
-.avatar-container { 
-    display: none !important; 
-    width: 0 !important;
-}
-
-/* 
-   Gradio 5 uses physical div elements for thread lines. 
-   We target them specifically to remove the "striped" background.
-*/
-.avatar-container div { 
-    background-color: transparent !important; 
-    display: none !important; 
-}
-
-/* 
-   Markdown horizontal rules (---) cause lines too. 
-   Removing them from the chatbot.
-*/
-.chatbot hr { 
-    display: none !important; 
-}
-
-/* UNIVERSAL removal of any vertical element/line within chatbot */
-.chatbot * {
-    border-left: none !important;
-}
-
-.chatbot *::before, 
-.chatbot *::after {
-    display: none !important;
-    content: none !important;
-    background: transparent !important;
-}
-
-/* Nuke any blockquote styling */
-.chatbot blockquote {
-    border-left: none !important;
-    margin-left: 0 !important;
-    padding-left: 0 !important;
-}
-
-/* Restore the bubble borders properly on the message itself */
-.chatbot .user-message {
-    background-color: #f9fafb !important;
-    border: 1px solid #e5e7eb !important;
-    color: #1f2937 !important;
-    padding: 12px 18px !important;
-}
-
-.chatbot .bot-message {
-    background-color: #ffffff !important;
-    border: 1px solid #e5e7eb !important;
-    border-left: 4px solid #111827 !important; /* This is the ONLY vertical line we want */
-    color: #374151 !important;
-    padding: 12px 18px !important;
-}
-
 .reset-btn {
     min-width: 140px !important;
-    padding: 6px 14px !important;
-    margin-top: 25px !important;
     background: transparent !important;
     border: 1px solid #d1d5db !important;
-}
-
-/* Remove any vertical lines in header or between columns */
-#header .gr-column, #header .gr-row {
-    border: none !important;
+    margin-top: 25px !important;
 }
 """
 
@@ -238,31 +156,7 @@ if os.environ.get("SPACE_ID"):
     print("Detected Hugging Face environment. Ensuring Playwright is installed...")
     os.system("playwright install chromium")
 
-# Forced pinstripe cleanup via JavaScript
-force_js = """
-function() {
-    const style = document.createElement('style');
-    style.innerHTML = `
-        .message-row::before, .message-row::after { display: none !important; background: none !important; }
-        .avatar-container { display: none !important; width: 0 !important; }
-        .chatbot blockquote { border-left: none !important; padding-left: 0 !important; }
-    `;
-    document.head.appendChild(style);
-
-    const observer = new MutationObserver((mutations) => {
-        const lines = document.querySelectorAll('.chatbot *, [class*="thread-line"], [class*="line"]');
-        lines.forEach(l => {
-            if (!l.classList.contains('bot-message')) {
-                l.style.borderLeft = 'none';
-                l.style.background = 'none';
-            }
-        });
-    });
-    observer.observe(document.body, { childList: true, subtree: true });
-}
-"""
-
-with gr.Blocks(title="Sidekick AI", theme=gr.themes.Base(primary_hue="slate", neutral_hue="slate"), css=custom_css, js=force_js) as ui:
+with gr.Blocks(title="Sidekick AI", theme=gr.themes.Base(primary_hue="slate", neutral_hue="slate"), css=custom_css) as ui:
     with gr.Row(elem_id="header", equal_height=False):
         with gr.Column(scale=4):
             gr.Markdown("# ⚡ Sidekick AI Agent (Enterprise Edition)\n*Full Automation Agent for the Modern Enterprise.*")
@@ -291,20 +185,21 @@ with gr.Blocks(title="Sidekick AI", theme=gr.themes.Base(primary_hue="slate", ne
             gr.HTML("<div style='padding: 15px; margin-top: 15px; background: #ffffff; border: 1px solid #e5e7eb; border-radius: 8px;'><p style='font-size: 0.88em; color: #6b7280; margin: 0; line-height: 1.5;'><i>Note: These are sample queries for the demo project. Feel free to replace them with your own tasks!</i></p></div>")
 
         with gr.Column(scale=3):
-            chatbot = gr.Chatbot(label="Logs & Output", height=650, type="messages", show_label=False)
+            # THE PAKKOKEINO: Custom HTML instead of Gr.Chatbot
+            log_window = gr.HTML(label="Logs & Output", elem_id="log-window", value="")
 
     ui.load(setup, [], [sidekick], api_name=False)
     
     message.submit(
-        process_message, [sidekick, message, success_criteria, chatbot], [chatbot, sidekick], api_name=False
+        process_message, [sidekick, message, success_criteria, log_window], [log_window, sidekick], api_name=False
     )
     success_criteria.submit(
-        process_message, [sidekick, message, success_criteria, chatbot], [chatbot, sidekick], api_name=False
+        process_message, [sidekick, message, success_criteria, log_window], [log_window, sidekick], api_name=False
     )
     go_button.click(
-        process_message, [sidekick, message, success_criteria, chatbot], [chatbot, sidekick], api_name=False
+        process_message, [sidekick, message, success_criteria, log_window], [log_window, sidekick], api_name=False
     )
-    reset_button.click(reset, [], [message, success_criteria, chatbot, sidekick], api_name=False)
+    reset_button.click(reset, [], [message, success_criteria, log_window, sidekick], api_name=False)
 
 
 if __name__ == "__main__":

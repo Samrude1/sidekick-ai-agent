@@ -212,33 +212,60 @@ class Sidekick:
     async def run_superstep(self, message, success_criteria, history):
         config = {
             "configurable": {"thread_id": self.sidekick_id},
-            "recursion_limit": 8  # ANTI-SPAM: Limit max agent loops to prevent runaway API costs
+            "recursion_limit": 8 
         }
 
+        # Handle history correctly (we'll store raw data in a hidden state)
+        # But for this demo, we'll just use the message
         state = {
-            "messages": message,
+            "messages": [HumanMessage(content=message)],
             "success_criteria": success_criteria or "The answer should be clear and accurate",
             "feedback_on_work": None,
             "success_criteria_met": False,
             "user_input_needed": False,
         }
+        
         result = await self.graph.ainvoke(state, config=config)
         
-        user = {"role": "user", "content": message}
-        
-        user = {"role": "user", "content": message}
-        
-        # Merge Work and Feedback into a single, professional response
+        # Extract content
         reply_raw = result["messages"][-2].content
         reply_text = extract_text(reply_raw)
         
         feedback_raw = result["messages"][-1].content
-        feedback_text = extract_text(feedback_raw)
+        feedback_text = extract_text(feedback_raw).replace('Evaluator Feedback on this answer: ', '')
         
-        combined_content = f"{reply_text}\n\n**Evaluator Feedback:**\n{feedback_text.replace('Evaluator Feedback on this answer: ', '')}"
-        combined_reply = {"role": "assistant", "content": combined_content}
+        # Build the PROFESSIONAL HTML LOGS
+        # history will now be a list of interaction blocks
+        timestamp = datetime.now().strftime("%H:%M:%S")
         
-        return history + [user, combined_reply]
+        new_block = f"""
+        <div class="log-entry">
+            <div class="log-header">
+                <span class="log-time">[{timestamp}]</span>
+                <span class="log-role role-user">USER REQUEST</span>
+            </div>
+            <div class="log-content">{message}</div>
+        </div>
+        
+        <div class="log-entry">
+            <div class="log-header">
+                <span class="log-time">[{timestamp}]</span>
+                <span class="log-role role-agent">SIDEKICK WORKER</span>
+            </div>
+            <div class="log-content">{reply_text}</div>
+        </div>
+        
+        <div class="log-entry">
+            <div class="log-header">
+                <span class="log-time">[{timestamp}]</span>
+                <span class="log-role role-eval">EVALUATOR FEEDBACK</span>
+            </div>
+            <div class="log-content feedback-box">{feedback_text}</div>
+        </div>
+        """
+        
+        updated_history = (history or "") + new_block
+        return updated_history
 
     def cleanup(self):
         if self.browser:
