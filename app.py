@@ -1,4 +1,5 @@
 import gradio as gr
+import os
 from sidekick import Sidekick
 
 
@@ -29,7 +30,47 @@ def free_resources(sidekick):
         print(f"Exception during cleanup: {e}")
 
 
-with gr.Blocks(title="Sidekick", theme=gr.themes.Default(primary_hue="emerald")) as ui:
+# Custom CSS for the "Electric Blue" Premium Theme
+custom_css = """
+body, .gradio-container {
+    background-color: #0A0A0B !important;
+    color: #E0E0E0 !important;
+}
+.gradio-container {
+    border: none !important;
+}
+button.primary {
+    background: linear-gradient(90deg, #007BFF 0%, #00C2FF 100%) !important;
+    border: none !important;
+    box-shadow: 0 0 15px rgba(0, 123, 255, 0.4) !important;
+}
+button.primary:hover {
+    box-shadow: 0 0 25px rgba(0, 194, 255, 0.6) !important;
+    transform: translateY(-1px);
+}
+.chatbot .message {
+    border-radius: 12px !important;
+}
+.chatbot .user-message {
+    background-color: #1A1A1C !important;
+}
+.chatbot .bot-message {
+    background-color: #121214 !important;
+    border-left: 3px solid #00C2FF !important;
+}
+input, textarea {
+    background-color: #1A1A1C !important;
+    border: 1px solid #333 !important;
+    color: white !important;
+}
+"""
+
+# Startup check for Hugging Face
+if os.environ.get("SPACE_ID"):
+    print("Detected Hugging Face environment. Ensuring Playwright is installed...")
+    os.system("playwright install chromium")
+
+with gr.Blocks(title="Sidekick AI", css=custom_css) as ui:
     gr.Markdown("## Sidekick AI Agent (Gemini 2026 Edition)")
     sidekick = gr.State(delete_callback=free_resources)
 
@@ -61,4 +102,8 @@ with gr.Blocks(title="Sidekick", theme=gr.themes.Default(primary_hue="emerald"))
 
 
 if __name__ == "__main__":
-    ui.launch(inbrowser=True)
+    ui.launch(
+        server_name="0.0.0.0",
+        server_port=7860,
+        theme=gr.themes.Default(primary_hue="blue", neutral_hue="slate")
+    )
