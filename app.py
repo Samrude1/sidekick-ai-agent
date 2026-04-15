@@ -70,7 +70,7 @@ if os.environ.get("SPACE_ID"):
     print("Detected Hugging Face environment. Ensuring Playwright is installed...")
     os.system("playwright install chromium")
 
-with gr.Blocks(title="Sidekick AI", css=custom_css) as ui:
+with gr.Blocks(title="Sidekick AI", theme=gr.themes.Default(primary_hue="blue", neutral_hue="slate"), css=custom_css) as ui:
     gr.Markdown("## Sidekick AI Agent (Gemini 2026 Edition)")
     sidekick = gr.State(delete_callback=free_resources)
 
@@ -102,8 +102,7 @@ with gr.Blocks(title="Sidekick AI", css=custom_css) as ui:
 
 
 if __name__ == "__main__":
-    ui.launch(
+    ui.queue(default_concurrency_limit=2, max_size=10).launch(
         server_name="0.0.0.0",
-        server_port=7860,
-        theme=gr.themes.Default(primary_hue="blue", neutral_hue="slate")
+        server_port=7860
     )
