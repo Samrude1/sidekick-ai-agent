@@ -218,7 +218,6 @@ button.stop:hover {
     border: none !important;
 }
 """
-"""
 
 # Startup check for Hugging Face
 if os.environ.get("SPACE_ID"):
