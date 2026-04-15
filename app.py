@@ -32,37 +32,48 @@ def free_resources(sidekick):
 
 # Custom CSS for the Professional Minimalist Theme
 custom_css = """
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
 
 body, .gradio-container {
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif !important;
     background-color: #fdfdfd !important;
-    color: #1a1a1a !important;
+    color: #1f2937 !important;
 }
 
 .gradio-container {
-    max-width: 1000px !important;
+    max-width: 1200px !important;
     margin: 0 auto !important;
 }
 
 /* Typography */
-h2 {
-    font-family: 'Inter', sans-serif !important;
-    font-weight: 600 !important;
-    color: #111111 !important;
+h1 {
+    font-weight: 700 !important;
+    color: #111827 !important;
     letter-spacing: -0.02em !important;
-    border-bottom: 1px solid #eaeaea;
-    padding-bottom: 0.5rem;
+    margin-bottom: 0.2rem !important;
+    font-size: 2.2rem !important;
+}
+
+h1 + p {
+    color: #6b7280 !important;
+    font-style: italic;
+    font-size: 0.95rem !important;
     margin-bottom: 1.5rem !important;
-    text-shadow: none !important;
+}
+
+h3 {
+    font-weight: 600 !important;
+    color: #374151 !important;
+    font-size: 1.1rem !important;
+    margin-bottom: 0.5rem !important;
 }
 
 /* Inputs */
 input, textarea {
     background-color: #ffffff !important;
-    border: 1px solid #d4d4d4 !important;
+    border: 1px solid #d1d5db !important;
     border-radius: 6px !important;
-    color: #111111 !important;
+    color: #1f2937 !important;
     font-size: 0.95rem !important;
     transition: all 0.2s ease !important;
     box-shadow: 0 1px 2px rgba(0,0,0,0.02) !important;
@@ -70,74 +81,81 @@ input, textarea {
 }
 
 input:focus, textarea:focus {
-    border-color: #4a4a4a !important;
-    box-shadow: 0 0 0 1px #4a4a4a !important;
+    border-color: #9ca3af !important;
+    box-shadow: 0 0 0 1px #9ca3af !important;
     outline: none !important;
 }
 
 /* Chatbot Area */
 .chatbot {
     background: #ffffff !important;
-    border: 1px solid #e0e0e0 !important;
+    border: 1px solid #e5e7eb !important;
     border-radius: 8px !important;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.03) !important;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05) !important;
+    font-size: 0.95rem !important;
 }
 
 .chatbot .message {
     border-radius: 6px !important;
     padding: 14px 18px !important;
-    font-size: 0.95rem !important;
     line-height: 1.6 !important;
     margin-bottom: 12px !important;
 }
 
 .chatbot .user-message {
-    background-color: #f7f7f7 !important;
-    border: 1px solid #e0e0e0 !important;
-    color: #111111 !important;
+    background-color: #f9fafb !important;
+    border: 1px solid #e5e7eb !important;
+    color: #1f2937 !important;
 }
 
 .chatbot .bot-message {
     background-color: #ffffff !important;
-    border: 1px solid #e0e0e0 !important;
-    border-left: 3px solid #111111 !important;
-    color: #222222 !important;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.02) !important;
+    border: 1px solid #e5e7eb !important;
+    border-left: 3px solid #111827 !important;
+    color: #374151 !important;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.02) !important;
 }
 
 /* Buttons */
 button.primary {
-    background: #111111 !important;
+    background: #111827 !important;
     color: #ffffff !important;
-    border: 1px solid #111111 !important;
+    border: none !important;
     border-radius: 6px !important;
     font-weight: 500 !important;
-    letter-spacing: 0.02em !important;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08) !important;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05) !important;
     transition: all 0.2s ease !important;
-    padding: 12px 24px !important;
+    padding: 10px 20px !important;
 }
 
 button.primary:hover {
-    background: #2a2a2a !important;
-    border-color: #2a2a2a !important;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.12) !important;
+    background: #374151 !important;
     transform: translateY(-1px) !important;
 }
 
 button.stop {
     background: #ffffff !important;
-    color: #444444 !important;
-    border: 1px solid #cccccc !important;
+    color: #374151 !important;
+    border: 1px solid #d1d5db !important;
     border-radius: 6px !important;
     font-weight: 500 !important;
     transition: all 0.2s ease !important;
+    padding: 8px 16px !important;
 }
 
 button.stop:hover {
-    background: #f0f0f0 !important;
-    color: #111111 !important;
-    border-color: #aaaaaa !important;
+    background: #f3f4f6 !important;
+    color: #111827 !important;
+    border-color: #9ca3af !important;
+}
+
+/* General Layout Tweaks */
+.gr-group {
+    background: #ffffff !important;
+    border: 1px solid #e5e7eb !important;
+    border-radius: 8px !important;
+    padding: 15px !important;
+    margin-bottom: 15px !important;
 }
 """
 
@@ -146,29 +164,37 @@ if os.environ.get("SPACE_ID"):
     print("Detected Hugging Face environment. Ensuring Playwright is installed...")
     os.system("playwright install chromium")
 
-with gr.Blocks(title="Sidekick AI", theme=gr.themes.Base(primary_hue="zinc", neutral_hue="zinc"), css=custom_css) as ui:
-    gr.Markdown("## Sidekick AI Agent (Enterprise Edition)")
+with gr.Blocks(title="Sidekick AI", theme=gr.themes.Base(primary_hue="slate", neutral_hue="slate"), css=custom_css) as ui:
+    with gr.Row(elem_id="header", equal_height=True):
+        with gr.Column(scale=4):
+            gr.Markdown("# ⚡ Sidekick AI Agent (Enterprise Edition)\n*Full Automation Agent for the Modern Enterprise.*")
+        with gr.Column(scale=1, min_width=150):
+            reset_button = gr.Button("Reset session", variant="stop")
+
     sidekick = gr.State(delete_callback=free_resources)
 
     with gr.Row():
-        chatbot = gr.Chatbot(label="Sidekick conversation", height=450, type="messages")
-    with gr.Group():
-        gr.Markdown("<p style='font-size: 0.9em; color: #666; margin-bottom: 5px; padding-left: 5px;'><i>These are sample queries for the demo project. Feel free to replace them with your own tasks!</i></p>")
-        with gr.Row():
-            message = gr.Textbox(
-                show_label=False, 
-                placeholder="What should I do for you?",
-                value="Find me the top 3 best-rated gyms in Vantaa, Finland."
-            )
-        with gr.Row():
-            success_criteria = gr.Textbox(
-                show_label=False, 
-                placeholder="Define your success criteria (e.g. 'Give me a 5-sentence summary')",
-                value="Provide a list of 3 gyms with their address and average rating."
-            )
-    with gr.Row():
-        reset_button = gr.Button("Reset Session", variant="stop")
-        go_button = gr.Button("Execute Task", variant="primary")
+        with gr.Column(scale=1, min_width=320):
+            with gr.Group():
+                message = gr.Textbox(
+                    label="Requirements",
+                    lines=6,
+                    placeholder="What should I do for you?",
+                    value="Find me the top 3 best-rated gyms in Vantaa, Finland."
+                )
+                success_criteria = gr.Textbox(
+                    label="Success Criteria",
+                    lines=3,
+                    placeholder="Define your success criteria",
+                    value="Provide a list of 3 gyms with their address and average rating."
+                )
+                go_button = gr.Button("Execute Task", variant="primary")
+            
+            with gr.Group():
+                gr.Markdown("<p style='font-size: 0.85em; color: #6b7280; margin: 0;'><i>Note: These are sample queries for the demo project. Feel free to replace them with your own tasks!</i></p>")
+
+        with gr.Column(scale=3):
+            chatbot = gr.Chatbot(label="Logs & Output", height=650, type="messages", show_label=False)
 
     ui.load(setup, [], [sidekick], api_name=False)
     
