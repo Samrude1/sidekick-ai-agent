@@ -225,11 +225,28 @@ if os.environ.get("SPACE_ID"):
     print("Detected Hugging Face environment. Ensuring Playwright is installed...")
     os.system("playwright install chromium")
 
-with gr.Blocks(title="Sidekick AI", theme=gr.themes.Base(primary_hue="slate", neutral_hue="slate"), css=custom_css) as ui:
+# Forced pinstripe cleanup via JavaScript
+force_js = """
+function() {
+    const observer = new MutationObserver((mutations) => {
+        const lines = document.querySelectorAll('.chatbot *, [class*="thread-line"], [class*="line"]');
+        lines.forEach(l => {
+            if (!l.classList.contains('bot-message')) {
+                l.style.borderLeft = 'none';
+            }
+        });
+        const avatars = document.querySelectorAll('[class*="avatar"]');
+        avatars.forEach(a => a.style.display = 'none');
+    });
+    observer.observe(document.body, { childList: true, subtree: true });
+}
+"""
+
+with gr.Blocks(title="Sidekick AI", theme=gr.themes.Base(primary_hue="slate", neutral_hue="slate"), css=custom_css, js=force_js) as ui:
     with gr.Row(elem_id="header", equal_height=False):
-        with gr.Column(scale=1):
+        with gr.Column(scale=4):
             gr.Markdown("# ⚡ Sidekick AI Agent (Enterprise Edition)\n*Full Automation Agent for the Modern Enterprise.*")
-        with gr.Column(scale=0):
+        with gr.Column(scale=1, min_width=150):
             reset_button = gr.Button("Reset session", variant="stop", elem_classes="reset-btn")
 
     sidekick = gr.State(delete_callback=free_resources)

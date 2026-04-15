@@ -210,7 +210,10 @@ class Sidekick:
         self.graph = graph_builder.compile(checkpointer=self.memory)
 
     async def run_superstep(self, message, success_criteria, history):
-        config = {"configurable": {"thread_id": self.sidekick_id}}
+        config = {
+            "configurable": {"thread_id": self.sidekick_id},
+            "recursion_limit": 8  # ANTI-SPAM: Limit max agent loops to prevent runaway API costs
+        }
 
         state = {
             "messages": message,
@@ -223,16 +226,19 @@ class Sidekick:
         
         user = {"role": "user", "content": message}
         
-        # Robust extraction for Gradio output
+        user = {"role": "user", "content": message}
+        
+        # Merge Work and Feedback into a single, professional response
         reply_raw = result["messages"][-2].content
         reply_text = extract_text(reply_raw)
-        reply = {"role": "assistant", "content": reply_text}
         
         feedback_raw = result["messages"][-1].content
         feedback_text = extract_text(feedback_raw)
-        feedback = {"role": "assistant", "content": feedback_text}
         
-        return history + [user, reply, feedback]
+        combined_content = f"{reply_text}\n\n---\n\n**Evaluator Feedback:** {feedback_text.replace('Evaluator Feedback on this answer: ', '')}"
+        combined_reply = {"role": "assistant", "content": combined_content}
+        
+        return history + [user, combined_reply]
 
     def cleanup(self):
         if self.browser:
