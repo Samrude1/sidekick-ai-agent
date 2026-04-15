@@ -1,6 +1,6 @@
 # Sidekick AI Agent (Gemini Edition)
 
-Welcome to your personal AI Sidekick! This project is a standalone version of the Day 4/5 LangGraph project, upgraded to 2026 standards.
+Welcome to your personal AI Sidekick! Sidekick is a high-performance, standalone multi-agent system designed for autonomous task execution and research.
 
 ## 🚀 Overview
 Sidekick is a multi-agent system built with **LangGraph** and **Gemini 2.5 Flash**. It uses a **Worker-Evaluator** pattern:
@@ -28,7 +28,7 @@ py -3.13 -m venv .venv
 
 #### 1. Environment Variables
 
-Create a `.env` file **in the `sidekick/` directory** (same folder as `app.py`) with:
+Create a `.env` file **in the project root** (same folder as `app.py`) with:
 
 ```env
 GOOGLE_API_KEY=your_google_api_key_here
@@ -98,7 +98,7 @@ mkdir sandbox
 
 ## 🏃 Running the App
 
-**From the `sidekick/` folder:**
+**From the project root:**
 ```powershell
 # Make sure virtual environment is activated first!
 .\.venv\Scripts\activate  # Windows
@@ -150,7 +150,7 @@ pip install -r requirements.txt
 
 ### "API Key errors" or "Gemini not responding"
 **Solution:** Check your `.env` file:
-- Must be in the `sidekick/` directory (same folder as `app.py`)
+- Must be in the project root (same folder as `app.py`)
 - Must contain valid `GOOGLE_API_KEY`
 - No quotes around the key value
 
@@ -161,4 +161,4 @@ playwright install
 ```
 
 ### For more detailed problem documentation
-See [PROBLEMS.md](PROBLEMS.md) for a complete list of issues encountered during setup and their solutions.
+See [TROUBLESHOOTING.md](docs/TROUBLESHOOTING.md) for a complete list of issues encountered during setup and their solutions.

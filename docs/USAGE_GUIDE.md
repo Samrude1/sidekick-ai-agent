@@ -47,7 +47,7 @@ Your Sidekick is a **Worker-Evaluator multi-agent system** powered by Gemini 2.5
 
 ### 📊 Research & Reports
 **Perfect for:**
-- Market research (like your burger place report!)
+- Market research (e.g., competitive landscape analysis)
 - Competitive analysis
 - Topic summaries
 - Data gathering and synthesis
@@ -142,7 +142,7 @@ Your Sidekick is a **Worker-Evaluator multi-agent system** powered by Gemini 2.5
 
 **Example Tasks:**
 ```
-"Verify: Is Python 3.14 compatible with Pydantic V1? Search for official sources"
+Task: "Search for 'Python async best practices', read the top 3 articles, and create a summary"
 
 "What is the current population of Helsinki? Use multiple sources"
 
@@ -190,12 +190,12 @@ Sidekick uses a **two-field interface**:
 
 **✅ Good:**
 ```
-"Research the top 3 restaurants in Helsinki that serve vegan burgers"
+"Research the top 3 SaaS companies in Finland providing AI solutions"
 ```
 
 **❌ Avoid:**
 ```
-"Find some burger places"
+"Find some companies"
 ```
 
 **Tips:**
@@ -208,7 +208,7 @@ Sidekick uses a **two-field interface**:
 
 **✅ Good:**
 ```
-"Create a markdown file with restaurant names, addresses, ratings, and price ranges. Include at least 3 options."
+"Create a markdown file with company names, service descriptions, and contact info. Include at least 3 options."
 ```
 
 **❌ Avoid:**
