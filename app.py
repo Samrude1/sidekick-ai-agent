@@ -154,8 +154,27 @@ button.stop:hover {
     background: #ffffff !important;
     border: 1px solid #e5e7eb !important;
     border-radius: 8px !important;
-    padding: 15px !important;
-    margin-bottom: 15px !important;
+    padding: 18px !important;
+}
+
+.left-panel {
+    margin-right: 15px !important;
+}
+
+/* Fix Chatbot threading lines and empty avatars */
+.chatbot [class*="avatar-container"] { 
+    display: none !important; 
+}
+.chatbot [class*="message-wrap"], 
+.chatbot [class*="message-row"],
+.chatbot [class*="message-wrap"] > div,
+.chatbot [class*="message-row"]::before,
+.chatbot [class*="message-wrap"]::before {
+    border-left: none !important;
+    border-right: none !important;
+    padding-left: 0 !important;
+    margin-left: 0 !important;
+    box-shadow: none !important;
 }
 """
 
@@ -174,7 +193,7 @@ with gr.Blocks(title="Sidekick AI", theme=gr.themes.Base(primary_hue="slate", ne
     sidekick = gr.State(delete_callback=free_resources)
 
     with gr.Row():
-        with gr.Column(scale=1, min_width=320):
+        with gr.Column(scale=1, min_width=320, elem_classes="left-panel"):
             with gr.Group():
                 message = gr.Textbox(
                     label="Requirements",
@@ -191,7 +210,7 @@ with gr.Blocks(title="Sidekick AI", theme=gr.themes.Base(primary_hue="slate", ne
                 go_button = gr.Button("Execute Task", variant="primary")
             
             with gr.Group():
-                gr.Markdown("<p style='font-size: 0.85em; color: #6b7280; margin: 0;'><i>Note: These are sample queries for the demo project. Feel free to replace them with your own tasks!</i></p>")
+                gr.Markdown("<div style='padding: 5px;'><p style='font-size: 0.85em; color: #6b7280; margin: 0; line-height: 1.4;'><i>Note: These are sample queries for the demo project. Feel free to replace them with your own tasks!</i></p></div>")
 
         with gr.Column(scale=3):
             chatbot = gr.Chatbot(label="Logs & Output", height=650, type="messages", show_label=False)
