@@ -75,7 +75,7 @@ with gr.Blocks(title="Sidekick AI", theme=gr.themes.Default(primary_hue="blue", 
     sidekick = gr.State(delete_callback=free_resources)
 
     with gr.Row():
-        chatbot = gr.Chatbot(label="Sidekick conversation", height=450)
+        chatbot = gr.Chatbot(label="Sidekick conversation", height=450, type="messages")
     with gr.Group():
         with gr.Row():
             message = gr.Textbox(show_label=False, placeholder="What should I do for you?")
