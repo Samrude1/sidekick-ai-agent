@@ -4,7 +4,6 @@ from dotenv import load_dotenv
 import os
 import requests
 from langchain_core.tools import Tool
-from langchain_community.agent_toolkits import FileManagementToolkit
 from langchain_community.tools.wikipedia.tool import WikipediaQueryRun
 from langchain_experimental.tools import PythonREPLTool
 from langchain_community.utilities import SerpAPIWrapper
@@ -34,12 +33,6 @@ def push(text: str):
     return "success"
 
 
-def get_file_tools():
-    # Ensuring sandbox exists in the sidekick folder
-    toolkit = FileManagementToolkit(root_dir="sandbox")
-    return toolkit.get_tools()
-
-
 async def other_tools():
     push_tool = Tool(
         name="send_push_notification", 
@@ -47,8 +40,6 @@ async def other_tools():
         description="Use this tool when you want to send a push notification"
     )
     
-    file_tools = get_file_tools()
-
     tool_search = Tool(
         name="search",
         func=serp.run,
@@ -60,4 +51,4 @@ async def other_tools():
 
     python_repl = PythonREPLTool()
     
-    return list(file_tools) + [push_tool, tool_search, python_repl, wiki_tool]
+    return [push_tool, tool_search, python_repl, wiki_tool]

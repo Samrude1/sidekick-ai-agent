@@ -106,13 +106,6 @@ playwright install
 - `google-search-results` - SerpAPI integration
 - `wikipedia` - Wikipedia API wrapper
 
-#### 4. Create Sandbox Directory
-
-```bash
-# Create directory for agent file operations
-mkdir sandbox
-```
-
 ## 🏃 Running the App
 
 **From the project root:**
@@ -135,7 +128,6 @@ Press `Ctrl+C` in the terminal
 - `app.py`: Gradio interface.
 - `sidekick.py`: LangGraph logic & Gemini integration.
 - `sidekick_tools.py`: Tool definitions (Playwright, Search, etc.).
-- `sandbox/`: Local directory for the agent to write/read files.
 - `.env`: API keys and configuration (create this yourself).
 
 ## 🐛 Troubleshooting
