@@ -4,7 +4,7 @@ emoji: 🚀
 colorFrom: blue
 colorTo: indigo
 sdk: gradio
-sdk_version: 5.20.0
+sdk_version: 5.27.0
 python_version: 3.13
 app_file: app.py
 pinned: false
@@ -18,6 +18,11 @@ Welcome to your personal AI Sidekick! Sidekick is a high-performance, standalone
 Sidekick is a multi-agent system built with **LangGraph** and **Gemini 2.5 Flash**. It uses a **Worker-Evaluator** pattern:
 1. **Worker**: Uses tools (Browser, Search, Wikipedia, Python) to execute your task.
 2. **Evaluator**: Reviews the Worker's output based on your specific success criteria.
+
+### 🛡️ Built-in Spam & Cost Protection (Portfolio Safe)
+Because this project is designed to be hosted publicly (e.g., on Hugging Face Spaces) without a password, it includes strict built-in limitations to prevent bots from driving up API costs:
+- **Gradio Concurrency Limits:** The UI enforces a strict queue (`max_size=10`, `default_concurrency_limit=2`). This means the server will only process a maximum of 2 requests simultaneously and will drop any excessive spam requests, making it heavily rate-limited against automated bots.
+- **Agent Recursion Caps:** LangGraph's internal evaluation loop is hard-capped at a `recursion_limit` of 8 (down from the default 25). If the agent gets stuck in a loop trying to solve a complex query, it will automatically abort before consuming excessive AI/Search API tokens.
 
 ## 🛠️ Setup
 

@@ -204,6 +204,7 @@ with gr.Blocks(title="Sidekick AI", theme=gr.themes.Base(primary_hue="slate", ne
 
 if __name__ == "__main__":
     ui.queue(default_concurrency_limit=2, max_size=10).launch(
-        server_name="0.0.0.0",
-        server_port=7860
+        show_error=True,
+        share=False,
+        ssr_mode=False
     )
