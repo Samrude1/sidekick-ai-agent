@@ -149,6 +149,57 @@ button.primary:hover {
     border: 1px solid #d1d5db !important;
     margin-top: 25px !important;
 }
+
+/* Capabilities Section */
+.skills-container {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 12px;
+    margin-top: 20px;
+}
+
+.skill-card {
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    padding: 12px 15px;
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    transition: all 0.2s ease;
+}
+
+.skill-card:hover {
+    border-color: #111827;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    transform: translateY(-2px);
+}
+
+.skill-icon {
+    font-size: 1.2rem;
+    background: #f3f4f6;
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 6px;
+    flex-shrink: 0;
+}
+
+.skill-info h4 {
+    margin: 0 !important;
+    font-size: 0.9rem !important;
+    font-weight: 600 !important;
+    color: #111827 !important;
+}
+
+.skill-info p {
+    margin: 2px 0 0 0 !important;
+    font-size: 0.8rem !important;
+    color: #6b7280 !important;
+    line-height: 1.4 !important;
+}
 """
 
 # Startup check for Hugging Face
@@ -182,6 +233,47 @@ with gr.Blocks(title="Sidekick AI", theme=gr.themes.Base(primary_hue="slate", ne
                 )
                 go_button = gr.Button("Execute Task", variant="primary")
             
+            gr.HTML("""
+            <div class="skills-container">
+                <div style="margin-bottom: 5px;"><b style="font-size: 0.9rem; color: #374151;">Agent Capabilities</b></div>
+                <div class="skill-card">
+                    <div class="skill-icon">🌐</div>
+                    <div class="skill-info">
+                        <h4>Autonomous Browsing</h4>
+                        <p>Navigates and interacts with websites to extract real-time data.</p>
+                    </div>
+                </div>
+                <div class="skill-card">
+                    <div class="skill-icon">🔍</div>
+                    <div class="skill-info">
+                        <h4>Deep Search</h4>
+                        <p>Performs multi-step web searches to find specific information.</p>
+                    </div>
+                </div>
+                <div class="skill-card">
+                    <div class="skill-icon">⚙️</div>
+                    <div class="skill-info">
+                        <h4>Code Execution</h4>
+                        <p>Runs Python logic for complex calculations and data processing.</p>
+                    </div>
+                </div>
+                <div class="skill-card">
+                    <div class="skill-icon">📚</div>
+                    <div class="skill-info">
+                        <h4>Factual Research</h4>
+                        <p>Accesses Wikipedia and structured sources for verified facts.</p>
+                    </div>
+                </div>
+                <div class="skill-card">
+                    <div class="skill-icon">🔔</div>
+                    <div class="skill-info">
+                        <h4>Smart Notifications</h4>
+                        <p>Can alert you via push notifications when long-running tasks finish.</p>
+                    </div>
+                </div>
+            </div>
+            """)
+
             gr.HTML("<div style='padding: 15px; margin-top: 15px; background: #ffffff; border: 1px solid #e5e7eb; border-radius: 8px;'><p style='font-size: 0.88em; color: #6b7280; margin: 0; line-height: 1.5;'><i>Note: These are sample queries for the demo project. Feel free to replace them with your own tasks!</i></p></div>")
 
         with gr.Column(scale=3):
