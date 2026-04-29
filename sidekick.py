@@ -18,6 +18,14 @@ from datetime import datetime
 # Load environment from root folder
 load_dotenv(".env", override=True)
 
+# SECURITY: Store keys in memory at module level before they are redacted from os.environ
+# This ensures that subsequent instances of Sidekick can still access them.
+ORIGINAL_KEYS = {
+    "GOOGLE_API_KEY": os.environ.get("GOOGLE_API_KEY"),
+    "SERPAPI_API_KEY": os.environ.get("SERPAPI_API_KEY"),
+    "PUSHOVER_TOKEN": os.environ.get("PUSHOVER_TOKEN"),
+}
+
 class State(TypedDict):
     messages: Annotated[List[Any], add_messages]
     success_criteria: str
@@ -68,8 +76,8 @@ class Sidekick:
         self.tools, self.browser, self.playwright = await playwright_tools()
         self.tools += await other_tools()
         
-        # Grab API key before redaction
-        google_api_key = os.environ.get("GOOGLE_API_KEY")
+        # Grab API key from our secure memory storage
+        google_api_key = ORIGINAL_KEYS.get("GOOGLE_API_KEY")
         
         # Using Gemini 2.5 Flash for Worker
         worker_llm = ChatGoogleGenerativeAI(model="gemini-2.5-flash", google_api_key=google_api_key)
