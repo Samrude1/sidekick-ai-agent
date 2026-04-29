@@ -67,18 +67,20 @@ class Sidekick:
         self.tools, self.browser, self.playwright = await playwright_tools()
         self.tools += await other_tools()
         
+        # Grab API key before redaction
+        google_api_key = os.environ.get("GOOGLE_API_KEY")
+        
         # Using Gemini 2.5 Flash for Worker
-        worker_llm = ChatGoogleGenerativeAI(model="gemini-2.5-flash")
+        worker_llm = ChatGoogleGenerativeAI(model="gemini-2.5-flash", google_api_key=google_api_key)
         self.worker_llm_with_tools = worker_llm.bind_tools(self.tools)
         
         # Using Gemini 2.5 Flash for Evaluator
-        evaluator_llm = ChatGoogleGenerativeAI(model="gemini-2.5-flash")
+        evaluator_llm = ChatGoogleGenerativeAI(model="gemini-2.5-flash", google_api_key=google_api_key)
         self.evaluator_llm_with_output = evaluator_llm.with_structured_output(EvaluatorOutput)
         
         await self.build_graph()
 
         # Security: Hide sensitive API keys from the process environment so the Python REPL cannot read them
-        import os
         for key in ["GOOGLE_API_KEY", "SERPAPI_API_KEY", "PUSHOVER_TOKEN"]:
             if key in os.environ:
                 os.environ[key] = "REDACTED_FOR_SECURITY"
