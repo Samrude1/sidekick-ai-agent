@@ -77,8 +77,15 @@ class Sidekick:
         
         await self.build_graph()
 
+        # Security: Hide sensitive API keys from the process environment so the Python REPL cannot read them
+        import os
+        for key in ["GOOGLE_API_KEY", "SERPAPI_API_KEY", "PUSHOVER_TOKEN"]:
+            if key in os.environ:
+                os.environ[key] = "REDACTED_FOR_SECURITY"
+
     def worker(self, state: State) -> Dict[str, Any]:
         system_message = f"""You are a helpful assistant that can use tools to complete tasks.
+    CRITICAL SECURITY RULE: You are strictly forbidden from navigating to localhost, 127.0.0.1, or any local IP addresses. Only browse public internet URLs.
     You keep working on a task until either you have a question or clarification for the user, or the success criteria is met.
     You have many tools to help you, including tools to browse the internet, navigating and retrieving web pages.
     You have a tool to run python code, but note that you would need to include a print() statement if you wanted to receive output.

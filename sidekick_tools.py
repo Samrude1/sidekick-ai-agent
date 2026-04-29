@@ -26,8 +26,14 @@ async def playwright_tools():
     return toolkit.get_tools(), browser, playwright
 
 
+push_count = 0
+
 def push(text: str):
     """Send a push notification to the user"""
+    global push_count
+    if push_count >= 2:
+        return "Push limit reached for this session."
+    push_count += 1
     # Note: If Pushover trial is expired, this will log but not buzz
     requests.post(pushover_url, data = {"token": pushover_token, "user": pushover_user, "message": text})
     return "success"
@@ -49,6 +55,13 @@ async def other_tools():
     wikipedia = WikipediaAPIWrapper()
     wiki_tool = WikipediaQueryRun(api_wrapper=wikipedia)
 
-    python_repl = PythonREPLTool()
+    class SafePythonREPLTool(PythonREPLTool):
+        def _run(self, query: str, **kwargs) -> str:
+            forbidden_imports = ["import os", "from os", "import sys", "from sys", "import subprocess", "from subprocess"]
+            if any(bad in query for bad in forbidden_imports):
+                return "Error: For security reasons, importing os, sys, or subprocess is not allowed."
+            return super()._run(query, **kwargs)
+
+    python_repl = SafePythonREPLTool()
     
     return [push_tool, tool_search, python_repl, wiki_tool]

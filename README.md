@@ -24,6 +24,14 @@ Because this project is designed to be hosted publicly (e.g., on Hugging Face Sp
 - **Gradio Concurrency Limits:** The UI enforces a strict queue (`max_size=10`, `default_concurrency_limit=2`). This means the server will only process a maximum of 2 requests simultaneously and will drop any excessive spam requests, making it heavily rate-limited against automated bots.
 - **Agent Recursion Caps:** LangGraph's internal evaluation loop is hard-capped at a `recursion_limit` of 8 (down from the default 25). If the agent gets stuck in a loop trying to solve a complex query, it will automatically abort before consuming excessive AI/Search API tokens.
 
+### 🔒 Security Audit & Hardening (Portfolio Safe)
+This agent has been professionally audited and hardened to prevent common AI vulnerabilities, ensuring it is safe for public portfolio demonstration:
+- **Python REPL Sandboxing:** The `PythonREPLTool` is wrapped with `SafePythonREPLTool`, which explicitly blocks the agent from importing dangerous system modules (`os`, `sys`, `subprocess`), preventing arbitrary system command execution.
+- **Environment Variable Isolation:** Sensitive API keys (Google, SerpAPI, Pushover) are automatically scrubbed from the `os.environ` memory space immediately after LangChain initialization. This guarantees that even if the agent attempts to read the environment, no secrets are leaked.
+- **SSRF Prevention:** The agent's system prompt contains strict guardrails forbidding navigation to local networks (e.g., `localhost`, `127.0.0.1`), mitigating Server-Side Request Forgery risks via the Playwright browser.
+- **Notification Rate-Limiting:** The push notification tool is hard-limited to a maximum of 2 pushes per session to prevent spam abuse.
+- **Credential Protection:** Comprehensive `.gitignore` rules prevent `.pem`, `.json`, `.key`, and `.p12` credential files from accidentally entering version control.
+
 ## 🛠️ Setup
 
 ### Prerequisites
