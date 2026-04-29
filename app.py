@@ -33,9 +33,6 @@ def free_resources(sidekick):
 
 # Custom CSS for the Professional Minimalist Theme
 custom_css = """
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&display=swap');
-
 body, .gradio-container {
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif !important;
     background-color: #fdfdfd !important;
@@ -207,7 +204,17 @@ if os.environ.get("SPACE_ID"):
     print("Detected Hugging Face environment. Ensuring Playwright is installed...")
     os.system("playwright install chromium")
 
-with gr.Blocks(title="Sidekick AI", theme=gr.themes.Base(primary_hue="slate", neutral_hue="slate"), css=custom_css) as ui:
+head_html = """
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+    /* Ensure no unwanted artifacts */
+    #log-window { scroll-behavior: smooth; }
+</style>
+"""
+
+with gr.Blocks(title="Sidekick AI", theme=gr.themes.Base(primary_hue="slate", neutral_hue="slate"), css=custom_css, head=head_html) as ui:
     with gr.Row(elem_id="header", equal_height=False):
         with gr.Column(scale=4):
             gr.Markdown("# ⚡ Sidekick AI Agent (Enterprise Edition)\n*Full Automation Agent for the Modern Enterprise.*")
