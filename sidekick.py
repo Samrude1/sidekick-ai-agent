@@ -12,6 +12,7 @@ from pydantic import BaseModel, Field
 from sidekick_tools import playwright_tools, other_tools
 import uuid
 import asyncio
+import os
 from datetime import datetime
 
 # Load environment from root folder
