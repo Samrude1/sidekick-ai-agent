@@ -19,6 +19,34 @@ Sidekick is a multi-agent system built with **LangGraph** and **Gemini 2.5 Flash
 1. **Worker**: Uses tools (Browser, Search, Wikipedia, Python) to execute your task.
 2. **Evaluator**: Reviews the Worker's output based on your specific success criteria.
 
+### 🏗️ Agentic Workflow (Worker-Evaluator Pattern)
+
+```mermaid
+graph TD
+    User([User Input]) --> Start{Start}
+    Start --> Worker[Worker Agent]
+    
+    subgraph "Tool Execution Layer"
+        Worker --> Tools{Tool Use?}
+        Tools -->|Search| Serp[SerpAPI / Wikipedia]
+        Tools -->|Browse| PW[Playwright Browser]
+        Tools -->|Code| REPL[Safe Python REPL]
+        Serp --> Worker
+        PW --> Worker
+        REPL --> Worker
+    end
+
+    Worker -->|Final Draft| Eval[Evaluator Agent]
+    Eval --> Check{Approved?}
+    
+    Check -->|No: Feedback| Worker
+    Check -->|Yes| End([Final Answer])
+    
+    style Eval fill:#f9f,stroke:#333,stroke-width:2px
+    style Worker fill:#bbf,stroke:#333,stroke-width:2px
+    style Check fill:#fff4dd,stroke:#d4a017,stroke-width:2px
+```
+
 ### 🛡️ Built-in Spam & Cost Protection (Portfolio Safe)
 Because this project is designed to be hosted publicly (e.g., on Hugging Face Spaces) without a password, it includes strict built-in limitations to prevent bots from driving up API costs:
 - **Gradio Concurrency Limits:** The UI enforces a strict queue (`max_size=10`, `default_concurrency_limit=2`). This means the server will only process a maximum of 2 requests simultaneously and will drop any excessive spam requests, making it heavily rate-limited against automated bots.
