@@ -1,5 +1,6 @@
 langgraph
 langchain-google-genai
+langchain-openai
 gradio
 playwright
 nest-asyncio

@@ -221,6 +221,14 @@ with gr.Blocks(title="Sidekick AI", theme=gr.themes.Base(primary_hue="slate", ne
         with gr.Column(scale=1, min_width=150):
             reset_button = gr.Button("Reset session", variant="stop", elem_classes="reset-btn")
 
+    gr.HTML("""
+    <div style="background-color: #fffbeb; border-left: 4px solid #f59e0b; padding: 12px 16px; margin-bottom: 20px; border-radius: 4px; box-shadow: 0 1px 2px rgba(0,0,0,0.05);">
+        <p style="margin: 0; color: #92400e; font-size: 0.95rem;">
+            <strong>⚠️ PORTFOLIO DEMO:</strong> This public demo utilizes open-source free tier models (Llama 3). Due to limited server resources, responses may occasionally experience latency or connection drops compared to the production version.
+        </p>
+    </div>
+    """)
+
     sidekick = gr.State(delete_callback=free_resources)
 
     with gr.Row():

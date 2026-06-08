@@ -4,7 +4,7 @@ from langgraph.graph import StateGraph, START, END
 from langgraph.graph.message import add_messages
 from dotenv import load_dotenv
 from langgraph.prebuilt import ToolNode
-from langchain_google_genai import ChatGoogleGenerativeAI
+from langchain_openai import ChatOpenAI
 from langgraph.checkpoint.memory import MemorySaver
 from langchain_core.messages import AIMessage, HumanMessage, SystemMessage
 from typing import List, Any, Optional, Dict
@@ -21,7 +21,7 @@ load_dotenv(".env", override=True)
 # SECURITY: Store keys in memory at module level before they are redacted from os.environ
 # This ensures that subsequent instances of Sidekick can still access them.
 ORIGINAL_KEYS = {
-    "GOOGLE_API_KEY": os.environ.get("GOOGLE_API_KEY"),
+    "OPENROUTER_API_KEY": os.environ.get("OPENROUTER_API_KEY"),
     "SERPAPI_API_KEY": os.environ.get("SERPAPI_API_KEY"),
     "PUSHOVER_TOKEN": os.environ.get("PUSHOVER_TOKEN"),
 }
@@ -77,20 +77,32 @@ class Sidekick:
         self.tools += await other_tools()
         
         # Grab API key from our secure memory storage
-        google_api_key = ORIGINAL_KEYS.get("GOOGLE_API_KEY")
+        openrouter_api_key = ORIGINAL_KEYS.get("OPENROUTER_API_KEY")
         
-        # Using Gemini 2.5 Flash for Worker
-        worker_llm = ChatGoogleGenerativeAI(model="gemini-2.5-flash", google_api_key=google_api_key)
+        # Using a free OpenRouter model
+        worker_llm = ChatOpenAI(
+            model="google/gemma-4-31b-it:free", 
+            api_key=openrouter_api_key,
+            base_url="https://openrouter.ai/api/v1",
+            max_retries=6,
+            timeout=60
+        )
         self.worker_llm_with_tools = worker_llm.bind_tools(self.tools)
         
-        # Using Gemini 2.5 Flash for Evaluator
-        evaluator_llm = ChatGoogleGenerativeAI(model="gemini-2.5-flash", google_api_key=google_api_key)
+        # Using a free OpenRouter model for Evaluator
+        evaluator_llm = ChatOpenAI(
+            model="google/gemma-4-31b-it:free", 
+            api_key=openrouter_api_key,
+            base_url="https://openrouter.ai/api/v1",
+            max_retries=6,
+            timeout=60
+        )
         self.evaluator_llm_with_output = evaluator_llm.with_structured_output(EvaluatorOutput)
         
         await self.build_graph()
 
         # Security: Hide sensitive API keys from the process environment so the Python REPL cannot read them
-        for key in ["GOOGLE_API_KEY", "SERPAPI_API_KEY", "PUSHOVER_TOKEN"]:
+        for key in ["OPENROUTER_API_KEY", "SERPAPI_API_KEY", "PUSHOVER_TOKEN"]:
             if key in os.environ:
                 os.environ[key] = "REDACTED_FOR_SECURITY"
 
