@@ -10,12 +10,12 @@ app_file: app.py
 pinned: false
 ---
 
-# Sidekick AI Agent (Gemini Edition)
+# Sidekick AI Agent (OpenRouter Demo Edition)
 
 Welcome to your personal AI Sidekick! Sidekick is a high-performance, standalone multi-agent system designed for autonomous task execution and research.
 
 ## 🚀 Overview
-Sidekick is a multi-agent system built with **LangGraph** and **Gemini 2.5 Flash**. It uses a **Worker-Evaluator** pattern:
+Sidekick is a multi-agent system built with **LangGraph** and **OpenRouter's free tier (Gemma 4 31B)**. It uses a **Worker-Evaluator** pattern:
 1. **Worker**: Uses tools (Browser, Search, Wikipedia, Python) to execute your task.
 2. **Evaluator**: Reviews the Worker's output based on your specific success criteria.
 
@@ -81,10 +81,10 @@ py -3.13 -m venv .venv
 
 #### 1. Environment Variables
 
-Create a `.env` file **in the project root** (same folder as `app.py`) with:
+create a `.env` file **in the project root** (same folder as `app.py`) with:
 
 ```env
-GOOGLE_API_KEY=your_google_api_key_here
+OPENROUTER_API_KEY=your_openrouter_api_key_here
 SERPAPI_API_KEY=your_serpapi_key_here
 
 # Optional (for push notifications)
@@ -93,7 +93,7 @@ PUSHOVER_USER=your_pushover_user
 ```
 
 **Get API Keys:**
-- Google API Key: https://aistudio.google.com/app/apikey
+- OpenRouter API Key: https://openrouter.ai/keys
 - SerpAPI Key: https://serpapi.com/
 
 #### 2. Virtual Environment Setup
@@ -132,7 +132,7 @@ playwright install
 
 **What gets installed:**
 - `langgraph` - Multi-agent orchestration
-- `langchain-google-genai` - Gemini integration
+- `langchain-openai` - OpenRouter integration
 - `langchain-community` - Community tools (Browser, Wikipedia, etc.)
 - `langchain-experimental` - Python REPL tool
 - `gradio` - Web UI framework
@@ -162,7 +162,7 @@ Press `Ctrl+C` in the terminal
 
 ## 🏗️ Architecture
 - `app.py`: Gradio interface.
-- `sidekick.py`: LangGraph logic & Gemini integration.
+- `sidekick.py`: LangGraph logic & OpenRouter integration.
 - `sidekick_tools.py`: Tool definitions (Playwright, Search, etc.).
 - `.env`: API keys and configuration (create this yourself).
 
@@ -193,10 +193,10 @@ py -3.13 -m venv .venv
 pip install -r requirements.txt
 ```
 
-### "API Key errors" or "Gemini not responding"
+### "API Key errors" or "OpenRouter not responding"
 **Solution:** Check your `.env` file:
 - Must be in the project root (same folder as `app.py`)
-- Must contain valid `GOOGLE_API_KEY`
+- Must contain valid `OPENROUTER_API_KEY`
 - No quotes around the key value
 
 ### Browser doesn't open or Playwright errors
