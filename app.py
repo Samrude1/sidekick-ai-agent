@@ -3,20 +3,20 @@ import os
 from sidekick import Sidekick
 
 
-async def setup():
+async def setup(*args, **kwargs):
     sk = Sidekick()
     await sk.setup()
     return sk
 
 
-async def process_message(sidekick, message, success_criteria, history):
+async def process_message(sidekick, message, success_criteria, history, *args, **kwargs):
     # Pass the instance to running superstep
     # history is now a raw HTML string
     results = await sidekick.run_superstep(message, success_criteria, history)
     return results, sidekick
 
 
-async def reset():
+async def reset(*args, **kwargs):
     new_sidekick = Sidekick()
     await new_sidekick.setup()
     return "", "", "", new_sidekick
