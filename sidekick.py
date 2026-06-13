@@ -81,7 +81,7 @@ class Sidekick:
         
         # Using a top-tier OpenRouter model for Worker
         worker_llm = ChatOpenAI(
-            model="anthropic/claude-3.5-sonnet", 
+            model="openai/gpt-4o", 
             api_key=openrouter_api_key,
             base_url="https://openrouter.ai/api/v1",
             max_retries=6,
