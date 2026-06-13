@@ -81,7 +81,7 @@ class Sidekick:
         
         # Using a top-tier OpenRouter model for Worker
         worker_llm = ChatOpenAI(
-            model="openai/gpt-4o", 
+            model="anthropic/claude-sonnet-4.5", 
             api_key=openrouter_api_key,
             base_url="https://openrouter.ai/api/v1",
             max_retries=6,
@@ -91,7 +91,7 @@ class Sidekick:
         
         # Using a top-tier OpenRouter model for Evaluator
         evaluator_llm = ChatOpenAI(
-            model="openai/gpt-4o", 
+            model="anthropic/claude-opus-4.5", 
             api_key=openrouter_api_key,
             base_url="https://openrouter.ai/api/v1",
             max_retries=6,
