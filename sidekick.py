@@ -79,9 +79,9 @@ class Sidekick:
         # Grab API key from our secure memory storage
         openrouter_api_key = ORIGINAL_KEYS.get("OPENROUTER_API_KEY")
         
-        # Using a free OpenRouter model
+        # Using a top-tier OpenRouter model for Worker
         worker_llm = ChatOpenAI(
-            model="google/gemma-4-31b-it:free", 
+            model="anthropic/claude-3.5-sonnet", 
             api_key=openrouter_api_key,
             base_url="https://openrouter.ai/api/v1",
             max_retries=6,
@@ -89,9 +89,9 @@ class Sidekick:
         )
         self.worker_llm_with_tools = worker_llm.bind_tools(self.tools)
         
-        # Using a free OpenRouter model for Evaluator
+        # Using a top-tier OpenRouter model for Evaluator
         evaluator_llm = ChatOpenAI(
-            model="google/gemma-4-31b-it:free", 
+            model="openai/gpt-4o", 
             api_key=openrouter_api_key,
             base_url="https://openrouter.ai/api/v1",
             max_retries=6,

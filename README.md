@@ -10,12 +10,12 @@ app_file: app.py
 pinned: false
 ---
 
-# Sidekick AI Agent (OpenRouter Demo Edition)
+# Sidekick AI Agent
 
 Welcome to your personal AI Sidekick! Sidekick is a high-performance, standalone multi-agent system designed for autonomous task execution and research.
 
 ## 🚀 Overview
-Sidekick is a multi-agent system built with **LangGraph** and **OpenRouter's free tier (Gemma 4 31B)**. It uses a **Worker-Evaluator** pattern:
+Sidekick is a multi-agent system built with **LangGraph** and premium **OpenRouter** models (Claude 3.5 Sonnet and GPT-4o). It uses a **Worker-Evaluator** pattern:
 1. **Worker**: Uses tools (Browser, Search, Wikipedia, Python) to execute your task.
 2. **Evaluator**: Reviews the Worker's output based on your specific success criteria.
 
