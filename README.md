@@ -15,7 +15,7 @@ pinned: false
 Welcome to your personal AI Sidekick! Sidekick is a high-performance, standalone multi-agent system designed for autonomous task execution and research.
 
 ## 🚀 Overview
-Sidekick is a multi-agent system built with **LangGraph** and premium **OpenRouter** models (Claude Sonnet 4.5 and Claude Opus 4.5). It uses a **Worker-Evaluator** pattern:
+Sidekick is a multi-agent system built with **LangGraph** and premium **OpenRouter** models (Claude Sonnet 4.5 and GPT-4o). It uses a **Worker-Evaluator** pattern:
 1. **Worker**: Uses tools (Browser, Search, Wikipedia, Python) to execute your task.
 2. **Evaluator**: Reviews the Worker's output based on your specific success criteria.
 
