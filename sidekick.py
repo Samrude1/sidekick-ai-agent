@@ -13,6 +13,7 @@ from sidekick_tools import playwright_tools, other_tools
 import uuid
 import asyncio
 import os
+import html
 from datetime import datetime
 
 # Load environment from root folder
@@ -262,8 +263,11 @@ class Sidekick:
         feedback_raw = result["messages"][-1].content
         feedback_text = extract_text(feedback_raw).replace('Evaluator Feedback on this answer: ', '')
         
-        # Build the PROFESSIONAL HTML LOGS
-        # history will now be a list of interaction blocks
+        # Build the PROFESSIONAL HTML LOGS with XSS prevention
+        # Escape all untrusted/dynamic content before injecting into HTML
+        safe_message = html.escape(str(message), quote=True)
+        safe_reply = html.escape(str(reply_text), quote=True)
+        safe_feedback = html.escape(str(feedback_text), quote=True)
         timestamp = datetime.now().strftime("%H:%M:%S")
         
         new_block = f"""
@@ -272,7 +276,7 @@ class Sidekick:
                 <span class="log-time">[{timestamp}]</span>
                 <span class="log-role role-user">USER REQUEST</span>
             </div>
-            <div class="log-content">{message}</div>
+            <div class="log-content">{safe_message}</div>
         </div>
         
         <div class="log-entry">
@@ -280,7 +284,7 @@ class Sidekick:
                 <span class="log-time">[{timestamp}]</span>
                 <span class="log-role role-agent">SIDEKICK WORKER</span>
             </div>
-            <div class="log-content">{reply_text}</div>
+            <div class="log-content">{safe_reply}</div>
         </div>
         
         <div class="log-entry">
@@ -288,7 +292,7 @@ class Sidekick:
                 <span class="log-time">[{timestamp}]</span>
                 <span class="log-role role-eval">EVALUATOR FEEDBACK</span>
             </div>
-            <div class="log-content feedback-box">{feedback_text}</div>
+            <div class="log-content feedback-box">{safe_feedback}</div>
         </div>
         """
         
