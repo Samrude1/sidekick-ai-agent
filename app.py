@@ -38,7 +38,19 @@ def free_resources(sidekick: Sidekick) -> None:
 
 # Custom CSS for the Professional Minimalist Theme
 custom_css = """
-body, .gradio-container {
+:root, .dark {
+    --background-fill-primary: #ffffff !important;
+    --background-fill-secondary: #f9fafb !important;
+    --block-background-fill: #ffffff !important;
+    --block-label-text-color: #111827 !important;
+    --input-background-fill: #ffffff !important;
+    --input-placeholder-color: #9ca3af !important;
+    --body-text-color: #1f2937 !important;
+    --border-color-primary: #e5e7eb !important;
+    --input-border-color: #d1d5db !important;
+}
+
+body, .gradio-container, .dark body, .dark .gradio-container {
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif !important;
     background-color: #fdfdfd !important;
     color: #1f2937 !important;
@@ -141,15 +153,37 @@ footer {
     margin-right: 15px !important;
 }
 
-label span {
+.left-panel .gr-group,
+.left-panel .block,
+.left-panel div[data-testid="textbox"],
+.left-panel .gr-form,
+.left-panel .gr-box {
+    background: #ffffff !important;
+    background-color: #ffffff !important;
+    border: 1px solid #e5e7eb !important;
+    border-radius: 8px !important;
+}
+
+label, label span, .block-label {
     color: #111827 !important;
     font-weight: 600 !important;
     font-size: 0.9rem !important;
+    background: transparent !important;
 }
 
-textarea, input {
+textarea, input, .gr-input, .gr-textbox {
+    background: #ffffff !important;
+    background-color: #ffffff !important;
     color: #111827 !important;
-    font-size: 0.95rem !important;
+    border: 1px solid #d1d5db !important;
+    border-radius: 6px !important;
+    font-size: 0.92rem !important;
+    line-height: 1.5 !important;
+}
+
+textarea:focus, input:focus {
+    border-color: #111827 !important;
+    box-shadow: 0 0 0 1px #111827 !important;
 }
 
 .gr-group {
