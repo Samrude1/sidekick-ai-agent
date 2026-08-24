@@ -358,7 +358,7 @@ with gr.Blocks(title="Sidekick AI", theme=gr.themes.Base(primary_hue="slate", ne
             </div>
             """)
 
-            gr.HTML("<div style='padding: 14px 16px; margin-top: 15px; background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px;'><p style='font-size: 0.85rem; color: #374151; margin: 0; line-height: 1.5;'>💡 <strong>Enterprise Demo:</strong> Test complex cross-functional research tasks, multi-step browser automation, or custom data analysis workflows.</p></div>")
+            gr.HTML("<div style='padding: 14px 16px; margin-top: 15px; background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px;'><p style='font-size: 0.85rem; color: #374151; margin: 0; line-height: 1.5;'>🚀 <strong>Autonomous Agent:</strong> Capable of end-to-end multi-step web browsing, verified research, Python computation, and structured strategic synthesis.</p></div>")
 
         with gr.Column(scale=3):
             # THE PAKKOKEINO: Custom HTML instead of Gr.Chatbot
