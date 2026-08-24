@@ -376,20 +376,20 @@ head_html = """
 
 def load_preset_1():
     return (
-        "Conduct a comprehensive market and architecture analysis of the top 3 Enterprise AI Agent frameworks (LangGraph, AutoGen, CrewAI). Compare their orchestration architectures, scalability, and security features. Generate a structured Excel comparison matrix and an Executive PDF brief.",
-        "Generate an Excel sheet 'ai_agent_matrix.xlsx' with comparison metrics and a styled Executive PDF 'ai_agent_executive_brief.pdf' with strategic recommendations."
+        "Conduct a comprehensive market and architecture analysis of the top 3 Enterprise AI Agent frameworks (LangGraph, AutoGen, CrewAI). Compare their orchestration architectures, scalability, and security features. Generate a 16:9 PowerPoint presentation deck (.pptx), an Executive PDF brief, and an Excel comparison matrix.",
+        "Generate an Executive PowerPoint presentation 'ai_agent_presentation.pptx', a styled Executive PDF 'ai_agent_executive_brief.pdf', and an Excel sheet 'ai_agent_matrix.xlsx' with strategic recommendations."
     )
 
 def load_preset_2():
     return (
-        "Perform an executive due diligence investigation on Microsoft's and Alphabet's latest quarterly AI revenue, Capex investments, and enterprise AI product roadmap. Synthesize key business risks and growth drivers into an Executive PDF brief.",
-        "Provide a clear comparison table, key risk factors, and generate an executive PDF brief 'due_diligence_brief.pdf' summarizing strategic findings."
+        "Perform an executive due diligence investigation on Microsoft's and Alphabet's latest quarterly AI revenue, Capex investments, and enterprise AI product roadmap. Synthesize key business risks and growth drivers into an Executive PowerPoint deck and PDF brief.",
+        "Provide a clear comparison, key risk factors, and generate an executive PowerPoint presentation 'due_diligence_deck.pptx' and an executive PDF brief 'due_diligence_brief.pdf' summarizing strategic findings."
     )
 
 def load_preset_3():
     return (
-        "Analyze and benchmark Postgres with pgvector vs dedicated vector databases (Pinecone, Qdrant, Milvus) for enterprise RAG applications. Compare query latency, cost at scale, and operational complexity. Generate an Excel workbook with the evaluation scores.",
-        "Deliver a structured feature comparison matrix, cost breakdown, and generate an Excel workbook 'vector_db_benchmark.xlsx' with the evaluation scores."
+        "Analyze and benchmark Postgres with pgvector vs dedicated vector databases (Pinecone, Qdrant, Milvus) for enterprise RAG applications. Compare query latency, cost at scale, and operational complexity. Generate a PowerPoint briefing deck and an Excel workbook with the evaluation scores.",
+        "Deliver a structured feature comparison, cost breakdown, and generate a PowerPoint presentation 'vector_db_benchmark.pptx' and an Excel workbook 'vector_db_benchmark.xlsx' with the evaluation scores."
     )
 
 with gr.Blocks(title="Sidekick AI", theme=gr.themes.Base(primary_hue="slate", neutral_hue="slate"), css=custom_css, head=head_html) as ui:
@@ -414,13 +414,13 @@ with gr.Blocks(title="Sidekick AI", theme=gr.themes.Base(primary_hue="slate", ne
                     label="Requirements",
                     lines=5,
                     placeholder="What should I do for you?",
-                    value="Conduct a competitive market and architecture analysis of the top 3 Enterprise AI Agent frameworks (e.g., LangGraph, AutoGen, CrewAI). Compare their orchestration models, production scalability, and security posture."
+                    value="Conduct a competitive market and architecture analysis of the top 3 Enterprise AI Agent frameworks (LangGraph, AutoGen, CrewAI). Compare their orchestration models, production scalability, and security posture. Generate a 16:9 PowerPoint deck and an Executive PDF brief."
                 )
                 success_criteria = gr.Textbox(
                     label="Success Criteria",
                     lines=3,
                     placeholder="Define your success criteria",
-                    value="Provide an executive comparison matrix with strengths, trade-offs, and an actionable strategic recommendation for enterprise deployment."
+                    value="Generate a 16:9 PowerPoint presentation 'ai_agent_presentation.pptx' and an Executive PDF 'ai_agent_executive_brief.pdf' with executive comparison cards, trade-offs, and an actionable strategic recommendation."
                 )
                 go_button = gr.Button("Execute Task", variant="primary")
             
@@ -444,8 +444,8 @@ with gr.Blocks(title="Sidekick AI", theme=gr.themes.Base(primary_hue="slate", ne
                 <div class="skill-card">
                     <div class="skill-icon">📊</div>
                     <div class="skill-info">
-                        <h4>Excel & PDF Export</h4>
-                        <p>Generates structured .xlsx workbooks and styled Executive PDF briefs.</p>
+                        <h4>PowerPoint, PDF & Excel Export</h4>
+                        <p>Generates styled 16:9 .pptx decks, Executive PDF briefs, and .xlsx workbooks.</p>
                     </div>
                 </div>
                 <div class="skill-card">
@@ -472,15 +472,15 @@ with gr.Blocks(title="Sidekick AI", theme=gr.themes.Base(primary_hue="slate", ne
             </div>
             """)
 
-            gr.HTML("<div class='tip-box'><p>🚀 <strong>Autonomous Agent:</strong> Capable of end-to-end multi-step web browsing, verified research, Python computation, Excel/PDF report generation, and structured strategic synthesis.</p></div>")
+            gr.HTML("<div class='tip-box'><p>🚀 <strong>Autonomous Enterprise Agent:</strong> Capable of end-to-end multi-step web browsing, verified research, Python computation, PowerPoint (.pptx) & PDF report generation, and structured strategic synthesis.</p></div>")
 
         with gr.Column(scale=3):
             # Custom HTML instead of Gr.Chatbot
             log_window = gr.HTML(label="Logs & Output", elem_id="log-window", value="")
             
-            # Download Center for generated Excel & PDF deliverables
+            # Download Center for generated PowerPoint, Excel & PDF deliverables
             download_files = gr.File(
-                label="📥 Session Deliverables (Excel & PDF Reports)",
+                label="📥 Session Deliverables (PowerPoint .pptx, PDF Briefs & Excel)",
                 file_count="multiple",
                 interactive=False,
                 elem_id="download-center"

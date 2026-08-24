@@ -53,14 +53,15 @@ graph TD
   - `success_criteria_met`: Boolean flag controlling workflow termination.
   - `user_input_needed`: Boolean flag when user clarification is requested.
 - **Agents:**
-  - **Worker Agent:** Powered by `anthropic/claude-3.5-haiku` (via OpenRouter), bound with tool suite.
+  - **Worker Agent:** Powered by `anthropic/claude-haiku-4.5` (via OpenRouter), bound with tool suite.
   - **Evaluator Agent:** Powered by `openai/gpt-4o-mini` (via OpenRouter), using structured output (`EvaluatorOutput`).
-- **Loop Protection:** Recursion limit set to 20 iterations.
+- **Loop Protection:** Recursion limit set to 45 iterations with automatic state snapshot recovery.
 
 ### 3. Tool & Security Layer (`sidekick_tools.py`)
-- **Enterprise Export Engine:**
-  - `generate_excel_report`: Uses `openpyxl` and `pandas` to generate styled `.xlsx` workbooks with custom header colors, auto-sized columns, and alternating row styling.
+- **Enterprise Deliverables Engine:**
+  - `generate_powerpoint_presentation`: Uses `python-pptx` to build modern 16:9 executive presentation decks with dark title slide, multi-column card comparisons, bullet slides, and strategic takeaways.
   - `generate_executive_pdf`: Uses `reportlab` to build formatted Executive PDF Briefs with callout boxes, structured section headings, and data tables.
+  - `generate_excel_report`: Uses `openpyxl` and `pandas` to generate styled `.xlsx` workbooks with custom header colors, auto-sized columns, and alternating row styling.
 - **Playwright Headless Browser:**
   - Async Chromium instance managed per session.
   - Programmatic SSRF guardrails (`is_safe_url`): blocks loopback (`127.0.0.1`), RFC 1918 private subnets (`10.x`, `172.16.x`, `192.168.x`), AWS/Cloud metadata IPs (`169.254.169.254`), and unsupported protocols.

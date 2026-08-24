@@ -3,9 +3,10 @@
 Last updated: 2026-08-24 19:27 (Local)
 
 ## What was built & polished
-- **Enterprise Export Engine:** Built `generate_excel_report` (`openpyxl`, `pandas`) and `generate_executive_pdf` (`reportlab`) tools with `StructuredTool` and Pydantic validation schemas.
-- **Ephemeral Session Manager (`session_manager.py`):** Browser-scoped session isolation (`sandbox/reports/<session_id>/`) with zero permanent local disk writes. Automatically cleans up artifacts on session reset/disconnect.
-- **Executive Presets & Download Center (`app.py`):** 3 one-click preset buttons, high-contrast `#download-center` cards, clean white background on dark wrappers, and zero API footer clutter.
+- **Executive PowerPoint Deck Generator (`sidekick_tools.py`):** Added `create_powerpoint_deck` and `generate_powerpoint_presentation` tool (`python-pptx`) for 16:9 widescreen presentations with dark title slides, 3-column comparison cards, bullet slides, and strategic takeaways.
+- **Enterprise PDF & Excel Export Engine:** Built `generate_excel_report` (`openpyxl`, `pandas`) and `generate_executive_pdf` (`reportlab`) tools with `StructuredTool` and Pydantic validation schemas.
+- **Ephemeral Session Manager (`session_manager.py`):** Browser-scoped session isolation (`sandbox/reports/<session_id>/`) with zero permanent local disk writes. Automatically cleans up artifacts on session reset/disconnect. Added `.pptx` to tracked file extensions.
+- **Executive Presets & Download Center (`app.py`):** 3 one-click preset buttons for PowerPoint (.pptx), PDF, and Excel deliverables, high-contrast `#download-center` cards, clean white background on dark wrappers.
 - **Orchestration Tuning (`sidekick.py`):** Set `recursion_limit=45`, `timeout=300s`, `max_tokens=4096`, and refined Evaluator stopping conditions to allow deep multi-tool research runs without interruption.
 - **HTML Parser Dependencies (`requirements.txt`):** Added `lxml` and `beautifulsoup4` for headless Playwright web interaction.
 

@@ -23,6 +23,11 @@ from pydantic import BaseModel, Field
 from langchain_community.tools.wikipedia.tool import WikipediaQueryRun
 from langchain_community.utilities import SerpAPIWrapper
 from langchain_community.utilities.wikipedia import WikipediaAPIWrapper
+from pptx import Presentation
+from pptx.util import Inches, Pt
+from pptx.dml.color import RGBColor
+from pptx.enum.text import PP_ALIGN
+from pptx.enum.shapes import MSO_SHAPE
 
 # Load environment from root folder
 load_dotenv(".env", override=True)
@@ -518,6 +523,189 @@ def create_executive_pdf(title: str, summary: str, sections_json: str, filename:
         return f"Error generating PDF report: {e}"
 
 
+def create_powerpoint_deck(title: str, subtitle: str, slides_json: str, filename: str = "executive_presentation.pptx", session_id: str = "default") -> str:
+    """Generate a downloadable, high-impact 16:9 Executive PowerPoint Presentation (.pptx)."""
+    try:
+        session_dir = get_session_dir(session_id)
+        safe_filename = os.path.basename(filename)
+        if not safe_filename.endswith(".pptx"):
+            safe_filename += ".pptx"
+        output_path = os.path.join(session_dir, safe_filename)
+
+        prs = Presentation()
+        prs.slide_width = Inches(13.333)
+        prs.slide_height = Inches(7.5)
+        blank_layout = prs.slide_layouts[6]
+
+        # Parse slides JSON
+        if isinstance(slides_json, str):
+            try:
+                slides_data = json.loads(slides_json)
+            except Exception:
+                slides_data = []
+        else:
+            slides_data = slides_json or []
+
+        # 1. Title Slide (Executive Dark Slate Theme)
+        title_slide = prs.slides.add_slide(blank_layout)
+        bg = title_slide.shapes.add_shape(MSO_SHAPE.RECTANGLE, 0, 0, Inches(13.333), Inches(7.5))
+        bg.fill.solid()
+        bg.fill.fore_color.rgb = RGBColor(15, 23, 42) # Slate 900
+        bg.line.fill.background()
+
+        # Accent vertical bar
+        accent = title_slide.shapes.add_shape(MSO_SHAPE.RECTANGLE, Inches(1.2), Inches(2.0), Inches(0.12), Inches(3.2))
+        accent.fill.solid()
+        accent.fill.fore_color.rgb = RGBColor(16, 185, 129) # Emerald 500
+        accent.line.fill.background()
+
+        # Title Box
+        title_box = title_slide.shapes.add_textbox(Inches(1.6), Inches(2.0), Inches(10.5), Inches(2.0))
+        tf = title_box.text_frame
+        tf.word_wrap = True
+        p_title = tf.paragraphs[0]
+        p_title.text = title
+        p_title.font.size = Pt(36)
+        p_title.font.bold = True
+        p_title.font.color.rgb = RGBColor(255, 255, 255)
+
+        # Subtitle Box
+        sub_box = title_slide.shapes.add_textbox(Inches(1.6), Inches(4.0), Inches(10.5), Inches(1.2))
+        sub_tf = sub_box.text_frame
+        sub_tf.word_wrap = True
+        p_sub = sub_tf.paragraphs[0]
+        p_sub.text = subtitle or "Strategic Executive Presentation"
+        p_sub.font.size = Pt(20)
+        p_sub.font.color.rgb = RGBColor(148, 163, 184) # Slate 400
+
+        # Footer badge
+        foot_box = title_slide.shapes.add_textbox(Inches(1.6), Inches(5.6), Inches(10.5), Inches(0.6))
+        foot_tf = foot_box.text_frame
+        p_foot = foot_tf.paragraphs[0]
+        cur_date = datetime.now().strftime("%B %d, %Y")
+        p_foot.text = f"⚡ Sidekick Executive Intelligence • Generated {cur_date}"
+        p_foot.font.size = Pt(13)
+        p_foot.font.bold = True
+        p_foot.font.color.rgb = RGBColor(16, 185, 129)
+
+        # 2. Content Slides
+        for s_idx, slide_info in enumerate(slides_data):
+            c_slide = prs.slides.add_slide(blank_layout)
+            slide_title = slide_info.get("title", f"Section {s_idx + 1}")
+            category = slide_info.get("category", "EXECUTIVE BRIEFING")
+
+            # Header Banner
+            head_box = c_slide.shapes.add_textbox(Inches(0.8), Inches(0.5), Inches(11.7), Inches(1.0))
+            h_tf = head_box.text_frame
+            h_tf.word_wrap = True
+            
+            p_cat = h_tf.paragraphs[0]
+            p_cat.text = category.upper()
+            p_cat.font.size = Pt(11)
+            p_cat.font.bold = True
+            p_cat.font.color.rgb = RGBColor(5, 150, 105) # Emerald 600
+
+            p_h = h_tf.add_paragraph()
+            p_h.text = slide_title
+            p_h.font.size = Pt(24)
+            p_h.font.bold = True
+            p_h.font.color.rgb = RGBColor(15, 23, 42)
+
+            # Divider line
+            div = c_slide.shapes.add_shape(MSO_SHAPE.RECTANGLE, Inches(0.8), Inches(1.55), Inches(11.7), Inches(0.02))
+            div.fill.solid()
+            div.fill.fore_color.rgb = RGBColor(226, 232, 240)
+            div.line.fill.background()
+
+            # Render Cards (e.g. 2, 3, or 4 columns)
+            cards = slide_info.get("cards", [])
+            if cards:
+                num_cards = min(len(cards), 4)
+                spacing = 0.3
+                total_w = 11.7
+                card_w = (total_w - (num_cards - 1) * spacing) / num_cards
+                card_h = Inches(4.5)
+                top_y = Inches(1.8)
+
+                for c_i, card in enumerate(cards[:num_cards]):
+                    left_x = Inches(0.8 + c_i * (card_w + spacing))
+                    
+                    # Card box
+                    c_box = c_slide.shapes.add_shape(MSO_SHAPE.ROUNDED_RECTANGLE, left_x, top_y, Inches(card_w), card_h)
+                    c_box.fill.solid()
+                    c_box.fill.fore_color.rgb = RGBColor(248, 250, 252) # Slate 50
+                    c_box.line.color.rgb = RGBColor(203, 213, 225) # Slate 300
+                    c_box.line.width = Pt(1.5)
+
+                    # Card Text
+                    c_tf = c_box.text_frame
+                    c_tf.word_wrap = True
+                    c_tf.margin_left = Inches(0.2)
+                    c_tf.margin_right = Inches(0.2)
+                    c_tf.margin_top = Inches(0.2)
+
+                    p_ctitle = c_tf.paragraphs[0]
+                    p_ctitle.text = card.get("title", f"Item {c_i + 1}")
+                    p_ctitle.font.size = Pt(16)
+                    p_ctitle.font.bold = True
+                    p_ctitle.font.color.rgb = RGBColor(15, 23, 42)
+
+                    if card.get("subtitle"):
+                        p_csub = c_tf.add_paragraph()
+                        p_csub.text = card.get("subtitle")
+                        p_csub.font.size = Pt(12)
+                        p_csub.font.color.rgb = RGBColor(100, 116, 139)
+
+                    for point in card.get("points", []):
+                        p_pt = c_tf.add_paragraph()
+                        p_pt.text = f"• {point}"
+                        p_pt.font.size = Pt(12)
+                        p_pt.font.color.rgb = RGBColor(51, 65, 85)
+
+                    if card.get("highlight"):
+                        p_hl = c_tf.add_paragraph()
+                        p_hl.text = f"★ {card.get('highlight')}"
+                        p_hl.font.size = Pt(12)
+                        p_hl.font.bold = True
+                        p_hl.font.color.rgb = RGBColor(5, 150, 105)
+
+            # Or render Bullets & Text
+            elif slide_info.get("bullets"):
+                b_box = c_slide.shapes.add_textbox(Inches(0.8), Inches(1.8), Inches(11.7), Inches(4.5))
+                b_tf = b_box.text_frame
+                b_tf.word_wrap = True
+                
+                bullets = slide_info.get("bullets", [])
+                for b_i, bullet in enumerate(bullets):
+                    p_b = b_tf.paragraphs[0] if b_i == 0 else b_tf.add_paragraph()
+                    p_b.text = f"•  {bullet}"
+                    p_b.font.size = Pt(15)
+                    p_b.font.color.rgb = RGBColor(30, 41, 59)
+                    p_b.space_after = Pt(12)
+
+            # Bottom takeaway callout box if present
+            if slide_info.get("takeaway"):
+                t_box = c_slide.shapes.add_shape(MSO_SHAPE.ROUNDED_RECTANGLE, Inches(0.8), Inches(6.4), Inches(11.7), Inches(0.7))
+                t_box.fill.solid()
+                t_box.fill.fore_color.rgb = RGBColor(236, 253, 245) # Emerald 50
+                t_box.line.color.rgb = RGBColor(16, 185, 129) # Emerald 500
+                t_box.line.width = Pt(1.5)
+
+                t_tf = t_box.text_frame
+                t_tf.word_wrap = True
+                t_tf.margin_top = Inches(0.12)
+                p_t = t_tf.paragraphs[0]
+                p_t.text = f"💡 Strategic Takeaway: {slide_info.get('takeaway')}"
+                p_t.font.size = Pt(12)
+                p_t.font.bold = True
+                p_t.font.color.rgb = RGBColor(4, 120, 87)
+
+        prs.save(output_path)
+        return f"Successfully generated Executive PowerPoint Presentation: '{safe_filename}' in session downloads. (Slides: {len(slides_data) + 1})"
+    except Exception as e:
+        return f"Error generating PowerPoint presentation: {e}"
+
+
 class ExcelReportInput(BaseModel):
     data_json: str = Field(description="JSON array of objects representing rows (e.g. '[{\"Company\": \"A\", \"Pricing\": \"$50\", \"Score\": 95}]') or a pipe-separated table string.")
     filename: str = Field(default="market_analysis.xlsx", description="Filename for the Excel file, ending with .xlsx.")
@@ -528,6 +716,13 @@ class ExecutivePdfInput(BaseModel):
     summary: str = Field(description="Executive Summary takeaway paragraph.")
     sections_json: str = Field(default="[]", description="JSON array of objects with keys 'heading', 'text', and optional 'table'.")
     filename: str = Field(default="executive_brief.pdf", description="Filename for the PDF file, ending with .pdf.")
+
+
+class PowerPointDeckInput(BaseModel):
+    title: str = Field(description="Title of the Executive PowerPoint Presentation.")
+    subtitle: str = Field(default="Strategic Executive Briefing", description="Subtitle of the presentation.")
+    slides_json: str = Field(description="JSON array of slide objects. Each object can have 'title', 'category', 'cards' (list of card objects with 'title', 'subtitle', 'points', 'highlight'), 'bullets' (list of bullet strings), and optional 'takeaway' (string).")
+    filename: str = Field(default="executive_presentation.pptx", description="Filename for the PowerPoint presentation, ending with .pptx.")
 
 
 async def other_tools(session_id: str = "default"):
@@ -571,7 +766,18 @@ async def other_tools(session_id: str = "default"):
         description="Generate a downloadable, high-impact Executive PDF Brief complete with branded header, executive summary callout box, structured sub-sections, and tables.",
         args_schema=ExecutivePdfInput
     )
+
+    def pptx_tool_fn(title: str, subtitle: str = "Strategic Executive Briefing", slides_json: str = "[]", filename: str = "executive_presentation.pptx") -> str:
+        return create_powerpoint_deck(title, subtitle, slides_json, filename, session_id=session_id)
+
+    pptx_tool = StructuredTool.from_function(
+        func=pptx_tool_fn,
+        name="generate_powerpoint_presentation",
+        description="Generate a downloadable, high-impact 16:9 Executive PowerPoint Presentation (.pptx) with modern title slide, multi-column card comparisons, bullet slides, and strategic takeaways.",
+        args_schema=PowerPointDeckInput
+    )
     
-    return [push_tool, tool_search, python_repl, wiki_tool, excel_tool, pdf_tool]
+    return [push_tool, tool_search, python_repl, wiki_tool, excel_tool, pdf_tool, pptx_tool]
+
 
 

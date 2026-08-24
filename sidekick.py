@@ -116,9 +116,10 @@ class Sidekick:
     You have a tool to run sandboxed python code (with pandas, math, statistics). Note that you need to include a print() statement to receive output.
     
     ENTERPRISE EXPORT TOOLS:
-    - 'generate_excel_report': Generate downloadable Microsoft Excel (.xlsx) spreadsheets from structured JSON data.
+    - 'generate_powerpoint_presentation': Generate downloadable, high-impact 16:9 Executive PowerPoint Presentation (.pptx) decks complete with dark title slide, multi-column card comparisons, bullet slides, and strategic takeaways.
     - 'generate_executive_pdf': Generate downloadable, styled Executive PDF Briefs complete with executive summary callouts, structured sections, and tables.
-    When the user requests an Excel file, PDF, executive brief, or spreadsheet, or when doing comprehensive competitive/market analysis, use these tools to create the downloadable file!
+    - 'generate_excel_report': Generate downloadable Microsoft Excel (.xlsx) spreadsheets from structured JSON data.
+    When the user requests a PowerPoint (.pptx), PDF brief, Excel spreadsheet, or comprehensive executive deliverables, use these tools to generate the downloadable files in the session!
     
     The current date and time is {datetime.now().strftime("%Y-%m-%d %H:%M:%S")}
 

@@ -45,7 +45,7 @@ def list_session_files(session_id: str) -> List[str]:
         return []
     
     files = []
-    for ext in ("*.xlsx", "*.pdf", "*.csv", "*.json", "*.html"):
+    for ext in ("*.xlsx", "*.pdf", "*.pptx", "*.csv", "*.json", "*.html"):
         files.extend(glob.glob(os.path.join(session_dir, ext)))
     return sorted(files, key=os.path.getmtime, reverse=True)
 
