@@ -85,7 +85,7 @@ class Sidekick:
             api_key=openrouter_api_key,
             base_url="https://openrouter.ai/api/v1",
             max_retries=6,
-            timeout=120
+            timeout=300
         )
         self.worker_llm_with_tools = worker_llm.bind_tools(self.tools)
         
@@ -95,7 +95,7 @@ class Sidekick:
             api_key=openrouter_api_key,
             base_url="https://openrouter.ai/api/v1",
             max_retries=6,
-            timeout=120
+            timeout=300
         )
         self.evaluator_llm_with_output = evaluator_llm.with_structured_output(EvaluatorOutput)
         
