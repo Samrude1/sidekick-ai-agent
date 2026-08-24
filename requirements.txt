@@ -12,3 +12,5 @@ wikipedia
 pandas
 openpyxl
 reportlab
+lxml
+beautifulsoup4
