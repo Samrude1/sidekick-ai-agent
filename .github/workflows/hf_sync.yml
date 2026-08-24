@@ -16,4 +16,10 @@ jobs:
         env:
           HF_TOKEN: ${{ secrets.HF_TOKEN }}
         run: |
-          git push --force https://samrude1:$HF_TOKEN@huggingface.co/spaces/samrude1/Sidekick main:main
+          if [ -z "$HF_TOKEN" ]; then
+            echo "::error ::HF_TOKEN secret is not set in GitHub Repository Secrets (Settings -> Secrets and variables -> Actions -> New repository secret)."
+            exit 1
+          fi
+          git config --global user.email "samrude@users.noreply.github.com"
+          git config --global user.name "Samrude1"
+          git push --force https://Samrude1:$HF_TOKEN@huggingface.co/spaces/Samrude1/Sidekick main:main || git push --force https://samrude1:$HF_TOKEN@huggingface.co/spaces/samrude1/Sidekick main:main
