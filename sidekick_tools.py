@@ -18,7 +18,8 @@ import itertools
 import ipaddress
 import socket
 import urllib.parse
-from langchain_core.tools import Tool
+from langchain_core.tools import Tool, StructuredTool
+from pydantic import BaseModel, Field
 from langchain_community.tools.wikipedia.tool import WikipediaQueryRun
 from langchain_community.utilities import SerpAPIWrapper
 from langchain_community.utilities.wikipedia import WikipediaAPIWrapper
@@ -517,6 +518,18 @@ def create_executive_pdf(title: str, summary: str, sections_json: str, filename:
         return f"Error generating PDF report: {e}"
 
 
+class ExcelReportInput(BaseModel):
+    data_json: str = Field(description="JSON array of objects representing rows (e.g. '[{\"Company\": \"A\", \"Pricing\": \"$50\", \"Score\": 95}]') or a pipe-separated table string.")
+    filename: str = Field(default="market_analysis.xlsx", description="Filename for the Excel file, ending with .xlsx.")
+
+
+class ExecutivePdfInput(BaseModel):
+    title: str = Field(description="Title of the Executive Brief.")
+    summary: str = Field(description="Executive Summary takeaway paragraph.")
+    sections_json: str = Field(default="[]", description="JSON array of objects with keys 'heading', 'text', and optional 'table'.")
+    filename: str = Field(default="executive_brief.pdf", description="Filename for the PDF file, ending with .pdf.")
+
+
 async def other_tools(session_id: str = "default"):
     push_tool = Tool(
         name="send_push_notification", 
@@ -542,20 +555,23 @@ async def other_tools(session_id: str = "default"):
     def excel_tool_fn(data_json: str, filename: str = "market_analysis.xlsx") -> str:
         return create_excel_report(data_json, filename, session_id=session_id)
 
-    excel_tool = Tool(
-        name="generate_excel_report",
+    excel_tool = StructuredTool.from_function(
         func=excel_tool_fn,
-        description="Generate a downloadable, professional Microsoft Excel (.xlsx) spreadsheet with auto-styled headers and alternating rows. Input must be a JSON array of objects representing rows (e.g. '[{\"Company\": \"A\", \"Pricing\": \"$50\", \"Score\": 95}]') or a pipe-separated table string."
+        name="generate_excel_report",
+        description="Generate a downloadable, professional Microsoft Excel (.xlsx) spreadsheet with auto-styled headers and alternating rows.",
+        args_schema=ExcelReportInput
     )
 
     def pdf_tool_fn(title: str, summary: str, sections_json: str = "[]", filename: str = "executive_brief.pdf") -> str:
         return create_executive_pdf(title, summary, sections_json, filename, session_id=session_id)
 
-    pdf_tool = Tool(
-        name="generate_executive_pdf",
+    pdf_tool = StructuredTool.from_function(
         func=pdf_tool_fn,
-        description="Generate a downloadable, high-impact Executive PDF Brief complete with branded header, executive summary callout box, structured sub-sections, and tables. Parameter sections_json should be a JSON array of objects with keys 'heading', 'text', and optional 'table'."
+        name="generate_executive_pdf",
+        description="Generate a downloadable, high-impact Executive PDF Brief complete with branded header, executive summary callout box, structured sub-sections, and tables.",
+        args_schema=ExecutivePdfInput
     )
     
     return [push_tool, tool_search, python_repl, wiki_tool, excel_tool, pdf_tool]
+
 
