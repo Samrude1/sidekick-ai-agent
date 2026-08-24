@@ -76,3 +76,21 @@ File: `app.py`
 | :--- | :--- |
 | **Container** | `.tip-box { padding: 14px 16px; margin-top: 15px; background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; }` |
 | **Typography** | `.tip-box p { font-size: 0.85rem; color: #374151; margin: 0; line-height: 1.5; }` |
+
+### 6. Executive Quick-Presets (`.preset-row`)
+File: `app.py`
+
+| Property | Class / Rule |
+| :--- | :--- |
+| **Container** | `.preset-row { display: flex; gap: 6px; margin-bottom: 12px; flex-wrap: wrap; }` |
+| **Preset Button** | `.preset-btn { background: #f9fafb; color: #374151; border: 1px solid #d1d5db; font-size: 0.76rem; font-weight: 500; border-radius: 6px; padding: 3px 8px; }` |
+| **Hover State** | `.preset-btn:hover { background: #e5e7eb; color: #111827; border-color: #9ca3af; }` |
+
+### 7. Deliverables Download Center (`#download-center`)
+File: `app.py`
+
+| Property | Class / Rule |
+| :--- | :--- |
+| **Container** | `#download-center { margin-top: 14px; background: #ffffff; border: 1px solid #e5e7eb; border-radius: 8px; }` |
+| **Interactive** | `interactive=False` (Displays session-generated downloadable Excel & PDF artifacts) |
+

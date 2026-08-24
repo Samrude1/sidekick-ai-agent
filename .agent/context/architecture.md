@@ -58,13 +58,21 @@ graph TD
 - **Loop Protection:** Recursion limit hard-capped at 8 iterations.
 
 ### 3. Tool & Security Layer (`sidekick_tools.py`)
+- **Enterprise Export Engine:**
+  - `generate_excel_report`: Uses `openpyxl` and `pandas` to generate styled `.xlsx` workbooks with custom header colors, auto-sized columns, and alternating row styling.
+  - `generate_executive_pdf`: Uses `reportlab` to build formatted Executive PDF Briefs with callout boxes, structured section headings, and data tables.
 - **Playwright Headless Browser:**
   - Async Chromium instance managed per session.
   - Programmatic SSRF guardrails (`is_safe_url`): blocks loopback (`127.0.0.1`), RFC 1918 private subnets (`10.x`, `172.16.x`, `192.168.x`), AWS/Cloud metadata IPs (`169.254.169.254`), and unsupported protocols.
 - **Sandboxed Python REPL:**
   - AST validation (`validate_python_code_ast`) prohibits dunder attributes (`__class__`, `__globals__`), dangerous builtins (`eval`, `exec`, `open`), and imports.
-  - Restricts execution to whitelist modules (`math`, `statistics`, `random`, `datetime`, `json`, `re`, `collections`, `itertools`).
+  - Restricts execution to whitelist modules (`math`, `statistics`, `random`, `datetime`, `json`, `re`, `collections`, `itertools`, `pandas`).
 - **External Connectors:**
   - SerpAPI for multi-step search engine queries.
   - Wikipedia API wrapper for encyclopedic facts.
   - Pushover push notifications (rate-limited to 2 per session).
+
+### 4. Ephemeral Session Manager (`session_manager.py`)
+- Isolated browser session directory generation (`sandbox/reports/<session_id>/`).
+- Ephemeral lifecycle: Purges all files automatically on session reset or disconnect, guaranteeing zero persistent local disk leakage.
+

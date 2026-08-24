@@ -9,6 +9,7 @@ from langgraph.checkpoint.memory import MemorySaver
 from langchain_core.messages import AIMessage, HumanMessage, SystemMessage
 from pydantic import BaseModel, Field
 from sidekick_tools import playwright_tools, other_tools
+from session_manager import cleanup_session_dir, list_session_files
 import uuid
 import asyncio
 import os
@@ -73,7 +74,7 @@ class Sidekick:
 
     async def setup(self):
         self.tools, self.browser, self.playwright = await playwright_tools()
-        self.tools += await other_tools()
+        self.tools += await other_tools(session_id=self.sidekick_id)
         
         # Grab API key from our secure memory storage
         openrouter_api_key = ORIGINAL_KEYS.get("OPENROUTER_API_KEY")
@@ -106,22 +107,24 @@ class Sidekick:
                 os.environ[key] = "REDACTED_FOR_SECURITY"
 
     def worker(self, state: State) -> Dict[str, Any]:
-        system_message = f"""You are a helpful assistant that can use tools to complete tasks.
+        system_message = f"""You are an elite enterprise autonomous AI assistant capable of multi-step research, web browsing, data analysis, and report generation.
     CRITICAL SECURITY RULE: You are strictly forbidden from navigating to localhost, 127.0.0.1, or any local IP addresses. Only browse public internet URLs.
     You keep working on a task until either you have a question or clarification for the user, or the success criteria is met.
     You have many tools to help you, including tools to browse the internet, navigating and retrieving web pages.
-    You have a tool to run python code, but note that you would need to include a print() statement if you wanted to receive output.
+    You have a tool to run sandboxed python code (with pandas, math, statistics). Note that you need to include a print() statement to receive output.
+    
+    ENTERPRISE EXPORT TOOLS:
+    - 'generate_excel_report': Generate downloadable Microsoft Excel (.xlsx) spreadsheets from structured JSON data.
+    - 'generate_executive_pdf': Generate downloadable, styled Executive PDF Briefs complete with executive summary callouts, structured sections, and tables.
+    When the user requests an Excel file, PDF, executive brief, or spreadsheet, or when doing comprehensive competitive/market analysis, use these tools to create the downloadable file!
+    
     The current date and time is {datetime.now().strftime("%Y-%m-%d %H:%M:%S")}
 
     This is the success criteria:
     {state["success_criteria"]}
     You should reply either with a question for the user about this assignment, or with your final response.
-    If you have a question for the user, you need to reply by clearly stating your question. An example might be:
-
-    Question: please clarify whether you want a summary or a detailed answer
-
-    If you've finished, reply with the final answer, and don't ask a question; simply reply with the answer.
-    """
+    If you have a question for the user, you need to reply by clearly stating your question.
+    If you've finished, reply with the comprehensive final answer, and mention any generated downloadable files."""
 
         if state.get("feedback_on_work"):
             system_message += f"""
@@ -295,6 +298,7 @@ class Sidekick:
         return updated_history
 
     def cleanup(self):
+        cleanup_session_dir(self.sidekick_id)
         if self.browser:
             try:
                 loop = asyncio.get_running_loop()
@@ -305,4 +309,5 @@ class Sidekick:
                 asyncio.run(self.browser.close())
                 if self.playwright:
                     asyncio.run(self.playwright.stop())
+
 

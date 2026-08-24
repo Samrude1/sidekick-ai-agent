@@ -19,6 +19,8 @@
 ## Tooling & Automation
 - **Browser Automation:** `playwright` (Chromium headless)
 - **Search Engine:** `google-search-results` (SerpAPIWrapper)
+- **Executive PDF Export:** `reportlab` (v5.x)
+- **Excel Spreadsheet Export:** `openpyxl` (v3.1+), `pandas` (v3.x)
 - **Encyclopedia Lookup:** `wikipedia`
 - **Push Alerts:** `requests` -> Pushover API
 - **Async Runtime:** `nest-asyncio`, `asyncio`

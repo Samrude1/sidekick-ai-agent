@@ -1,30 +1,28 @@
-# Memory — UI Contrast, Onboarding & UI Registry
+# Memory — Enterprise Assistant Evolution & Export Engine
 
-Last updated: 2026-08-24 18:08 (Local)
+Last updated: 2026-08-24 18:18 (Local)
 
 ## What was built
-- Fixed typography contrast across `app.py` and `custom_css`: darkened headers, subtitles, labels, and textboxes.
-- Styled the "Reset session" button (`.reset-btn`) with high-contrast borders and active hover states.
-- Removed default Gradio footer and API links (`footer { display: none !important; }` and `show_api=False`).
-- Replaced sample gym queries with a strategic enterprise AI agent comparison prompt.
-- Refactored inline HTML styles in `app.py` into `.section-title` and `.tip-box` CSS token classes.
-- Executed `legacy-project-onboarding` workflow: created `.agent/context/architecture.md`, `project-overview.md`, `tech-stack.md`, `database-schema.md`, and `code-standards.md`.
-- Executed `/imprint audit` and established `.agent/context/ui-registry.md` design baseline.
+- **Excel & PDF Export Engine:** Added `create_excel_report` (`openpyxl`, `pandas`) and `create_executive_pdf` (`reportlab`) tools in `sidekick_tools.py`.
+- **Ephemeral Session Manager (`session_manager.py`):** Browser-scoped session isolation (`sandbox/reports/<session_id>/`) with zero permanent local disk writes. Automatically cleans up artifacts on session reset/disconnect.
+- **Executive Quick-Presets:** Added 3 one-click preset buttons (Market & Pricing Matrix, Company Due Diligence, Tech Stack Benchmark) in `app.py`.
+- **Deliverables Download Center:** Integrated `gr.File` component in `app.py` displaying downloadable `.xlsx` and `.pdf` files.
+- **Context Updates:** Updated `architecture.md`, `tech-stack.md`, `ui-registry.md`, and `requirements.txt`.
 
 ## Decisions made
-- Positioned Sidekick as a fully autonomous production agent and technical portfolio showcase (removed all "demo" / "prototype" references).
-- Enforced clean white background (`#ffffff`) for input components across both light and dark theme wrappers (such as Hugging Face Space parent containers) to prevent dark-on-dark contrast bugs.
-- Established design tokens: 8px container radius, 6px control radius, 4px badge radius, Slate-900 primary button, and Emerald green evaluator feedback callout.
+- Tied memory and artifact lifetime strictly to the active browser session (`gr.State` + LangGraph `MemorySaver` + ephemeral session folder), ensuring zero persistent local disk writes for public portfolio privacy.
+- Enabled `pandas` module in Python REPL AST sandbox for advanced numerical and tabular operations.
 
 ## Problems solved
-- Solved unreadable dark text on dark blue background caused by Hugging Face dark theme wrapper overriding Gradio's base background styles. Fixed by explicitly defining `:root, .dark` CSS variables and setting `!important` backgrounds on input containers and textareas.
+- Handled `datetime` import scope in PDF generator.
+- Verified end-to-end generation of both `.xlsx` workbooks and multi-section `.pdf` briefs.
 
 ## Current state
-- Fully functional, production-ready autonomous agent with LangGraph Worker-Evaluator loop, Playwright browser tools, AST Python sandboxing, and polished enterprise UI.
-- All context files initialized in `.agent/context/` and synced with GitHub remote (`main`).
+- Fully functional enterprise research and execution agent with live browser automation, Python computation, automatic Excel/PDF artifact generation, and clean download center.
 
 ## Next session starts with
-- Implementing downloadable file export capabilities (Excel reports via `openpyxl`, executive PDF briefs via `reportlab`) or adding persistent SQLite/ChromaDB memory.
+- Vision/OCR screenshot parsing or proactive scheduled monitor workflows.
 
 ## Open questions
 - None currently blocking.
+

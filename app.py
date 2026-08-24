@@ -1,6 +1,10 @@
 import gradio as gr
 import os
 from sidekick import Sidekick
+from session_manager import cleanup_all_stale_sessions, list_session_files, cleanup_session_dir
+
+# Purge any leftover temporary session files on server start
+cleanup_all_stale_sessions()
 
 
 async def setup() -> Sidekick:
@@ -11,18 +15,21 @@ async def setup() -> Sidekick:
 
 
 async def process_message(sidekick: Sidekick, message: str, success_criteria: str, history: str):
-    """Execute a superstep against the Sidekick agent and update the log history."""
+    """Execute a superstep against the Sidekick agent, update logs, and list generated downloadable files."""
     if not sidekick:
         sidekick = await setup()
     results = await sidekick.run_superstep(message, success_criteria, history)
-    return results, sidekick
+    files = list_session_files(sidekick.sidekick_id)
+    return results, files, sidekick
 
 
-async def reset():
-    """Reset the session with a fresh Sidekick agent instance."""
+async def reset(sidekick: Sidekick = None):
+    """Reset the session with a fresh Sidekick agent instance and purge previous session artifacts."""
+    if sidekick:
+        cleanup_session_dir(sidekick.sidekick_id)
     new_sidekick = Sidekick()
     await new_sidekick.setup()
-    return "", "", "", new_sidekick
+    return "", "", "", [], new_sidekick
 
 
 def free_resources(sidekick: Sidekick) -> None:
@@ -33,6 +40,7 @@ def free_resources(sidekick: Sidekick) -> None:
             sidekick.cleanup()
         except Exception as e:
             print(f"Exception during cleanup: {e}")
+
 
 
 
@@ -273,6 +281,37 @@ button.primary:hover {
     line-height: 1.4 !important;
 }
 
+.preset-row {
+    display: flex !important;
+    gap: 6px !important;
+    margin-bottom: 12px !important;
+    flex-wrap: wrap !important;
+}
+
+.preset-btn {
+    background: #f9fafb !important;
+    color: #374151 !important;
+    border: 1px solid #d1d5db !important;
+    font-size: 0.76rem !important;
+    font-weight: 500 !important;
+    border-radius: 6px !important;
+    padding: 3px 8px !important;
+    transition: all 0.15s ease !important;
+}
+
+.preset-btn:hover {
+    background: #e5e7eb !important;
+    color: #111827 !important;
+    border-color: #9ca3af !important;
+}
+
+#download-center {
+    margin-top: 14px !important;
+    background: #ffffff !important;
+    border: 1px solid #e5e7eb !important;
+    border-radius: 8px !important;
+}
+
 .section-title {
     font-size: 0.9rem !important;
     font-weight: 600 !important;
@@ -311,6 +350,24 @@ head_html = """
 </style>
 """
 
+def load_preset_1():
+    return (
+        "Conduct a comprehensive market and architecture analysis of the top 3 Enterprise AI Agent frameworks (LangGraph, AutoGen, CrewAI). Compare their orchestration architectures, scalability, and security features. Generate a structured Excel comparison matrix and an Executive PDF brief.",
+        "Generate an Excel sheet 'ai_agent_matrix.xlsx' with comparison metrics and a styled Executive PDF 'ai_agent_executive_brief.pdf' with strategic recommendations."
+    )
+
+def load_preset_2():
+    return (
+        "Perform an executive due diligence investigation on Microsoft's and Alphabet's latest quarterly AI revenue, Capex investments, and enterprise AI product roadmap. Synthesize key business risks and growth drivers into an Executive PDF brief.",
+        "Provide a clear comparison table, key risk factors, and generate an executive PDF brief 'due_diligence_brief.pdf' summarizing strategic findings."
+    )
+
+def load_preset_3():
+    return (
+        "Analyze and benchmark Postgres with pgvector vs dedicated vector databases (Pinecone, Qdrant, Milvus) for enterprise RAG applications. Compare query latency, cost at scale, and operational complexity. Generate an Excel workbook with the evaluation scores.",
+        "Deliver a structured feature comparison matrix, cost breakdown, and generate an Excel workbook 'vector_db_benchmark.xlsx' with the evaluation scores."
+    )
+
 with gr.Blocks(title="Sidekick AI", theme=gr.themes.Base(primary_hue="slate", neutral_hue="slate"), css=custom_css, head=head_html) as ui:
     with gr.Row(elem_id="header", equal_height=False):
         with gr.Column(scale=4):
@@ -318,16 +375,20 @@ with gr.Blocks(title="Sidekick AI", theme=gr.themes.Base(primary_hue="slate", ne
         with gr.Column(scale=1, min_width=150):
             reset_button = gr.Button("Reset session", variant="stop", elem_classes="reset-btn")
 
-
-
     sidekick = gr.State(delete_callback=free_resources)
 
     with gr.Row():
         with gr.Column(scale=1, min_width=320, elem_classes="left-panel"):
             with gr.Group():
+                gr.Markdown("<div style='font-size: 0.8rem; font-weight: 600; color: #4b5563; margin-bottom: 6px;'>⚡ Executive Quick-Presets:</div>")
+                with gr.Row(elem_classes="preset-row"):
+                    preset_btn_1 = gr.Button("📊 Market & Pricing Matrix", size="sm", elem_classes="preset-btn")
+                    preset_btn_2 = gr.Button("🏢 Company Due Diligence", size="sm", elem_classes="preset-btn")
+                    preset_btn_3 = gr.Button("⚖️ Tech Stack Benchmark", size="sm", elem_classes="preset-btn")
+
                 message = gr.Textbox(
                     label="Requirements",
-                    lines=6,
+                    lines=5,
                     placeholder="What should I do for you?",
                     value="Conduct a competitive market and architecture analysis of the top 3 Enterprise AI Agent frameworks (e.g., LangGraph, AutoGen, CrewAI). Compare their orchestration models, production scalability, and security posture."
                 )
@@ -357,6 +418,13 @@ with gr.Blocks(title="Sidekick AI", theme=gr.themes.Base(primary_hue="slate", ne
                     </div>
                 </div>
                 <div class="skill-card">
+                    <div class="skill-icon">📊</div>
+                    <div class="skill-info">
+                        <h4>Excel & PDF Export</h4>
+                        <p>Generates structured .xlsx workbooks and styled Executive PDF briefs.</p>
+                    </div>
+                </div>
+                <div class="skill-card">
                     <div class="skill-icon">⚙️</div>
                     <div class="skill-info">
                         <h4>Code Execution</h4>
@@ -380,24 +448,36 @@ with gr.Blocks(title="Sidekick AI", theme=gr.themes.Base(primary_hue="slate", ne
             </div>
             """)
 
-            gr.HTML("<div class='tip-box'><p>🚀 <strong>Autonomous Agent:</strong> Capable of end-to-end multi-step web browsing, verified research, Python computation, and structured strategic synthesis.</p></div>")
+            gr.HTML("<div class='tip-box'><p>🚀 <strong>Autonomous Agent:</strong> Capable of end-to-end multi-step web browsing, verified research, Python computation, Excel/PDF report generation, and structured strategic synthesis.</p></div>")
 
         with gr.Column(scale=3):
-            # THE PAKKOKEINO: Custom HTML instead of Gr.Chatbot
+            # Custom HTML instead of Gr.Chatbot
             log_window = gr.HTML(label="Logs & Output", elem_id="log-window", value="")
+            
+            # Download Center for generated Excel & PDF deliverables
+            download_files = gr.File(
+                label="📥 Session Deliverables (Excel & PDF Reports)",
+                file_count="multiple",
+                interactive=False,
+                elem_id="download-center"
+            )
+
+    preset_btn_1.click(load_preset_1, [], [message, success_criteria])
+    preset_btn_2.click(load_preset_2, [], [message, success_criteria])
+    preset_btn_3.click(load_preset_3, [], [message, success_criteria])
 
     ui.load(setup, [], [sidekick], api_name=False)
     
     message.submit(
-        process_message, [sidekick, message, success_criteria, log_window], [log_window, sidekick], api_name=False
+        process_message, [sidekick, message, success_criteria, log_window], [log_window, download_files, sidekick], api_name=False
     )
     success_criteria.submit(
-        process_message, [sidekick, message, success_criteria, log_window], [log_window, sidekick], api_name=False
+        process_message, [sidekick, message, success_criteria, log_window], [log_window, download_files, sidekick], api_name=False
     )
     go_button.click(
-        process_message, [sidekick, message, success_criteria, log_window], [log_window, sidekick], api_name=False
+        process_message, [sidekick, message, success_criteria, log_window], [log_window, download_files, sidekick], api_name=False
     )
-    reset_button.click(reset, [], [message, success_criteria, log_window, sidekick], api_name=False)
+    reset_button.click(reset, [sidekick], [message, success_criteria, log_window, download_files, sidekick], api_name=False)
 
 
 if __name__ == "__main__":
