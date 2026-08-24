@@ -119,7 +119,9 @@ class Sidekick:
     - 'generate_powerpoint_presentation': Generate downloadable, high-impact 16:9 Executive PowerPoint Presentation (.pptx) decks complete with dark title slide, multi-column card comparisons, bullet slides, and strategic takeaways.
     - 'generate_executive_pdf': Generate downloadable, styled Executive PDF Briefs complete with executive summary callouts, structured sections, and tables.
     - 'generate_excel_report': Generate downloadable Microsoft Excel (.xlsx) spreadsheets from structured JSON data.
-    When the user requests a PowerPoint (.pptx), PDF brief, Excel spreadsheet, or comprehensive executive deliverables, use these tools to generate the downloadable files in the session!
+    
+    CRITICAL MULTI-DELIVERABLE RULE:
+    When the user requests multiple deliverable formats (e.g. BOTH a PowerPoint presentation AND an Executive PDF brief, or an Excel sheet), you MUST invoke the tools for ALL requested file formats before providing your final response. Never omit any requested document type!
     
     The current date and time is {datetime.now().strftime("%Y-%m-%d %H:%M:%S")}
 
@@ -186,9 +188,9 @@ class Sidekick:
     Respond with your feedback, and decide if the success criteria is met by this response.
     
     EVALUATION GUIDELINES:
-    1. If the assistant provided the requested analysis and/or called tools to generate requested deliverables (e.g. Excel .xlsx or PDF .pdf), mark success_criteria_met: True.
-    2. Give the assistant the benefit of the doubt once deliverables and summary are provided. Do NOT keep looping if the primary goal is achieved.
-    3. Only reject (success_criteria_met: False) if the assistant failed to perform the task or produced an empty response.
+    1. Check all specifically requested deliverables in the success criteria (e.g. PowerPoint .pptx, PDF .pdf, Excel .xlsx).
+    2. If the user explicitly requested multiple formats (e.g. BOTH a PowerPoint deck AND a PDF brief) and one format has not been created yet, reject (success_criteria_met: False) with feedback to generate the missing file.
+    3. Once all requested deliverable tools have been executed and the final answer is provided, mark success_criteria_met: True.
     """
         if state.get("feedback_on_work"):
             user_message += f"Also, note that in a prior attempt from the Assistant, you provided this feedback: {state['feedback_on_work']}\n"
