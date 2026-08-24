@@ -588,20 +588,20 @@ def create_powerpoint_deck(title: str, subtitle: str, slides_json: str, filename
         p_foot.font.bold = True
         p_foot.font.color.rgb = RGBColor(16, 185, 129)
 
-        # 2. Content Slides
+        # 2. Content Slides (Corporate Clean Light Theme)
         for s_idx, slide_info in enumerate(slides_data):
             c_slide = prs.slides.add_slide(blank_layout)
             slide_title = slide_info.get("title", f"Section {s_idx + 1}")
             category = slide_info.get("category", "EXECUTIVE BRIEFING")
 
             # Header Banner
-            head_box = c_slide.shapes.add_textbox(Inches(0.8), Inches(0.5), Inches(11.7), Inches(1.0))
+            head_box = c_slide.shapes.add_textbox(Inches(0.8), Inches(0.4), Inches(11.733), Inches(0.95))
             h_tf = head_box.text_frame
             h_tf.word_wrap = True
             
             p_cat = h_tf.paragraphs[0]
             p_cat.text = category.upper()
-            p_cat.font.size = Pt(11)
+            p_cat.font.size = Pt(10.5)
             p_cat.font.bold = True
             p_cat.font.color.rgb = RGBColor(5, 150, 105) # Emerald 600
 
@@ -612,37 +612,42 @@ def create_powerpoint_deck(title: str, subtitle: str, slides_json: str, filename
             p_h.font.color.rgb = RGBColor(15, 23, 42)
 
             # Divider line
-            div = c_slide.shapes.add_shape(MSO_SHAPE.RECTANGLE, Inches(0.8), Inches(1.55), Inches(11.7), Inches(0.02))
+            div = c_slide.shapes.add_shape(MSO_SHAPE.RECTANGLE, Inches(0.8), Inches(1.42), Inches(11.733), Inches(0.015))
             div.fill.solid()
             div.fill.fore_color.rgb = RGBColor(226, 232, 240)
             div.line.fill.background()
 
-            # Render Cards (e.g. 2, 3, or 4 columns)
+            # Render Corporate Cards (e.g. 2, 3, or 4 columns)
             cards = slide_info.get("cards", [])
             if cards:
                 num_cards = min(len(cards), 4)
+                total_w = 11.733
                 spacing = 0.3
-                total_w = 11.7
                 card_w = (total_w - (num_cards - 1) * spacing) / num_cards
-                card_h = Inches(4.5)
-                top_y = Inches(1.8)
+                card_h = Inches(4.9)
+                top_y = Inches(1.55)
 
                 for c_i, card in enumerate(cards[:num_cards]):
                     left_x = Inches(0.8 + c_i * (card_w + spacing))
                     
-                    # Card box
-                    c_box = c_slide.shapes.add_shape(MSO_SHAPE.ROUNDED_RECTANGLE, left_x, top_y, Inches(card_w), card_h)
+                    # Card Outer Container
+                    c_box = c_slide.shapes.add_shape(MSO_SHAPE.RECTANGLE, left_x, top_y, Inches(card_w), card_h)
                     c_box.fill.solid()
                     c_box.fill.fore_color.rgb = RGBColor(248, 250, 252) # Slate 50
-                    c_box.line.color.rgb = RGBColor(203, 213, 225) # Slate 300
-                    c_box.line.width = Pt(1.5)
+                    c_box.line.color.rgb = RGBColor(226, 232, 240) # Slate 200
+                    c_box.line.width = Pt(1.0)
 
-                    # Card Text
-                    c_tf = c_box.text_frame
+                    # Card Header Bar (Crisp corporate header strip)
+                    c_head = c_slide.shapes.add_shape(MSO_SHAPE.RECTANGLE, left_x, top_y, Inches(card_w), Inches(0.85))
+                    c_head.fill.solid()
+                    c_head.fill.fore_color.rgb = RGBColor(241, 245, 249) # Slate 100
+                    c_head.line.color.rgb = RGBColor(226, 232, 240)
+                    c_head.line.width = Pt(1.0)
+
+                    c_tf = c_head.text_frame
                     c_tf.word_wrap = True
-                    c_tf.margin_left = Inches(0.2)
-                    c_tf.margin_right = Inches(0.2)
-                    c_tf.margin_top = Inches(0.2)
+                    c_tf.margin_left = Inches(0.18)
+                    c_tf.margin_top = Inches(0.12)
 
                     p_ctitle = c_tf.paragraphs[0]
                     p_ctitle.text = card.get("title", f"Item {c_i + 1}")
@@ -653,25 +658,46 @@ def create_powerpoint_deck(title: str, subtitle: str, slides_json: str, filename
                     if card.get("subtitle"):
                         p_csub = c_tf.add_paragraph()
                         p_csub.text = card.get("subtitle")
-                        p_csub.font.size = Pt(12)
+                        p_csub.font.size = Pt(11)
                         p_csub.font.color.rgb = RGBColor(100, 116, 139)
 
-                    for point in card.get("points", []):
-                        p_pt = c_tf.add_paragraph()
-                        p_pt.text = f"• {point}"
-                        p_pt.font.size = Pt(12)
-                        p_pt.font.color.rgb = RGBColor(51, 65, 85)
+                    # Card Body Text / Bullets
+                    b_box = c_slide.shapes.add_textbox(left_x, top_y + Inches(0.95), Inches(card_w), Inches(3.1))
+                    b_tf = b_box.text_frame
+                    b_tf.word_wrap = True
+                    b_tf.margin_left = Inches(0.18)
+                    b_tf.margin_right = Inches(0.18)
+                    b_tf.margin_top = Inches(0.1)
 
+                    points = card.get("points", [])
+                    for p_idx, point in enumerate(points):
+                        p_pt = b_tf.paragraphs[0] if p_idx == 0 else b_tf.add_paragraph()
+                        p_pt.text = f"•  {point}"
+                        p_pt.font.size = Pt(12)
+                        p_pt.font.color.rgb = RGBColor(30, 41, 59)
+                        p_pt.space_after = Pt(6)
+
+                    # Card Bottom Highlight Badge
                     if card.get("highlight"):
-                        p_hl = c_tf.add_paragraph()
+                        hl_box = c_slide.shapes.add_shape(MSO_SHAPE.RECTANGLE, left_x + Inches(0.15), top_y + Inches(4.2), Inches(card_w - 0.3), Inches(0.55))
+                        hl_box.fill.solid()
+                        hl_box.fill.fore_color.rgb = RGBColor(236, 253, 245) # Emerald 50
+                        hl_box.line.color.rgb = RGBColor(110, 231, 183) # Emerald 300
+                        hl_box.line.width = Pt(0.75)
+
+                        hl_tf = hl_box.text_frame
+                        hl_tf.word_wrap = True
+                        hl_tf.margin_left = Inches(0.1)
+                        hl_tf.margin_top = Inches(0.08)
+                        p_hl = hl_tf.paragraphs[0]
                         p_hl.text = f"★ {card.get('highlight')}"
-                        p_hl.font.size = Pt(12)
+                        p_hl.font.size = Pt(11)
                         p_hl.font.bold = True
-                        p_hl.font.color.rgb = RGBColor(5, 150, 105)
+                        p_hl.font.color.rgb = RGBColor(4, 120, 87)
 
             # Or render Bullets & Text
             elif slide_info.get("bullets"):
-                b_box = c_slide.shapes.add_textbox(Inches(0.8), Inches(1.8), Inches(11.7), Inches(4.5))
+                b_box = c_slide.shapes.add_textbox(Inches(0.8), Inches(1.7), Inches(11.733), Inches(4.5))
                 b_tf = b_box.text_frame
                 b_tf.word_wrap = True
                 
@@ -681,24 +707,25 @@ def create_powerpoint_deck(title: str, subtitle: str, slides_json: str, filename
                     p_b.text = f"•  {bullet}"
                     p_b.font.size = Pt(15)
                     p_b.font.color.rgb = RGBColor(30, 41, 59)
-                    p_b.space_after = Pt(12)
+                    p_b.space_after = Pt(10)
 
-            # Bottom takeaway callout box if present
+            # Bottom Strategic Takeaway Bar if present
             if slide_info.get("takeaway"):
-                t_box = c_slide.shapes.add_shape(MSO_SHAPE.ROUNDED_RECTANGLE, Inches(0.8), Inches(6.4), Inches(11.7), Inches(0.7))
+                t_box = c_slide.shapes.add_shape(MSO_SHAPE.RECTANGLE, Inches(0.8), Inches(6.55), Inches(11.733), Inches(0.58))
                 t_box.fill.solid()
-                t_box.fill.fore_color.rgb = RGBColor(236, 253, 245) # Emerald 50
+                t_box.fill.fore_color.rgb = RGBColor(240, 253, 244) # Emerald 50
                 t_box.line.color.rgb = RGBColor(16, 185, 129) # Emerald 500
-                t_box.line.width = Pt(1.5)
+                t_box.line.width = Pt(1.0)
 
                 t_tf = t_box.text_frame
                 t_tf.word_wrap = True
-                t_tf.margin_top = Inches(0.12)
+                t_tf.margin_left = Inches(0.15)
+                t_tf.margin_top = Inches(0.08)
                 p_t = t_tf.paragraphs[0]
-                p_t.text = f"💡 Strategic Takeaway: {slide_info.get('takeaway')}"
-                p_t.font.size = Pt(12)
+                p_t.text = f"💡 STRATEGIC TAKEAWAY: {slide_info.get('takeaway')}"
+                p_t.font.size = Pt(11.5)
                 p_t.font.bold = True
-                p_t.font.color.rgb = RGBColor(4, 120, 87)
+                p_t.font.color.rgb = RGBColor(6, 95, 70)
 
         prs.save(output_path)
         return f"Successfully generated Executive PowerPoint Presentation: '{safe_filename}' in session downloads. (Slides: {len(slides_data) + 1})"
