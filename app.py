@@ -272,6 +272,28 @@ button.primary:hover {
     color: #4b5563 !important;
     line-height: 1.4 !important;
 }
+
+.section-title {
+    font-size: 0.9rem !important;
+    font-weight: 600 !important;
+    color: #111827 !important;
+    margin-bottom: 6px !important;
+}
+
+.tip-box {
+    padding: 14px 16px !important;
+    margin-top: 15px !important;
+    background: #f9fafb !important;
+    border: 1px solid #e5e7eb !important;
+    border-radius: 8px !important;
+}
+
+.tip-box p {
+    font-size: 0.85rem !important;
+    color: #374151 !important;
+    margin: 0 !important;
+    line-height: 1.5 !important;
+}
 """
 
 # Startup check for Hugging Face
@@ -319,7 +341,7 @@ with gr.Blocks(title="Sidekick AI", theme=gr.themes.Base(primary_hue="slate", ne
             
             gr.HTML("""
             <div class="skills-container">
-                <div style="margin-bottom: 5px;"><b style="font-size: 0.9rem; color: #374151;">Agent Capabilities</b></div>
+                <div class="section-title">Agent Capabilities</div>
                 <div class="skill-card">
                     <div class="skill-icon">🌐</div>
                     <div class="skill-info">
@@ -358,7 +380,7 @@ with gr.Blocks(title="Sidekick AI", theme=gr.themes.Base(primary_hue="slate", ne
             </div>
             """)
 
-            gr.HTML("<div style='padding: 14px 16px; margin-top: 15px; background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px;'><p style='font-size: 0.85rem; color: #374151; margin: 0; line-height: 1.5;'>🚀 <strong>Autonomous Agent:</strong> Capable of end-to-end multi-step web browsing, verified research, Python computation, and structured strategic synthesis.</p></div>")
+            gr.HTML("<div class='tip-box'><p>🚀 <strong>Autonomous Agent:</strong> Capable of end-to-end multi-step web browsing, verified research, Python computation, and structured strategic synthesis.</p></div>")
 
         with gr.Column(scale=3):
             # THE PAKKOKEINO: Custom HTML instead of Gr.Chatbot
