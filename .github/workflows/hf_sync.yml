@@ -12,9 +12,8 @@ jobs:
         with:
           fetch-depth: 0
           lfs: true
-      - name: Push to hub
-        uses: huggingface/hub-sync@v0.1.0
-        with:
-          github_repo_id: Samrude1/sidekick-ai-agent
-          huggingface_repo_id: samrude1/Sidekick
-          hf_token: ${{ secrets.HF_TOKEN }}
+      - name: Push to Hugging Face Space
+        env:
+          HF_TOKEN: ${{ secrets.HF_TOKEN }}
+        run: |
+          git push --force https://samrude1:$HF_TOKEN@huggingface.co/spaces/samrude1/Sidekick main:main
