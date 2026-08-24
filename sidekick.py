@@ -84,6 +84,7 @@ class Sidekick:
             model="anthropic/claude-sonnet-4.5", 
             api_key=openrouter_api_key,
             base_url="https://openrouter.ai/api/v1",
+            max_tokens=4096,
             max_retries=6,
             timeout=300
         )
@@ -94,6 +95,7 @@ class Sidekick:
             model="openai/gpt-4o", 
             api_key=openrouter_api_key,
             base_url="https://openrouter.ai/api/v1",
+            max_tokens=4096,
             max_retries=6,
             timeout=300
         )
