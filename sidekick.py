@@ -85,7 +85,7 @@ class Sidekick:
             api_key=openrouter_api_key,
             base_url="https://openrouter.ai/api/v1",
             max_retries=6,
-            timeout=60
+            timeout=120
         )
         self.worker_llm_with_tools = worker_llm.bind_tools(self.tools)
         
@@ -95,7 +95,7 @@ class Sidekick:
             api_key=openrouter_api_key,
             base_url="https://openrouter.ai/api/v1",
             max_retries=6,
-            timeout=60
+            timeout=120
         )
         self.evaluator_llm_with_output = evaluator_llm.with_structured_output(EvaluatorOutput)
         
@@ -234,7 +234,7 @@ class Sidekick:
     async def run_superstep(self, message: str, success_criteria: Optional[str], history: Optional[str]) -> str:
         config = {
             "configurable": {"thread_id": self.sidekick_id},
-            "recursion_limit": 8 
+            "recursion_limit": 20 
         }
 
         state = {
@@ -245,19 +245,29 @@ class Sidekick:
             "user_input_needed": False,
         }
         
-        result = await self.graph.ainvoke(state, config=config)
+        reply_raw = ""
+        feedback_raw = ""
         
-        # Safely extract worker reply and evaluator feedback
-        messages_list = result.get("messages", [])
-        if len(messages_list) >= 2:
-            reply_raw = messages_list[-2].content if hasattr(messages_list[-2], "content") else messages_list[-2].get("content", "")
-            feedback_raw = messages_list[-1].content if hasattr(messages_list[-1], "content") else messages_list[-1].get("content", "")
-        elif len(messages_list) == 1:
-            reply_raw = messages_list[-1].content if hasattr(messages_list[-1], "content") else messages_list[-1].get("content", "")
-            feedback_raw = "Evaluator feedback completed."
-        else:
-            reply_raw = "No response generated."
-            feedback_raw = "No feedback generated."
+        try:
+            result = await self.graph.ainvoke(state, config=config)
+            messages_list = result.get("messages", [])
+            if len(messages_list) >= 2:
+                reply_raw = messages_list[-2].content if hasattr(messages_list[-2], "content") else messages_list[-2].get("content", "")
+                feedback_raw = messages_list[-1].content if hasattr(messages_list[-1], "content") else messages_list[-1].get("content", "")
+            elif len(messages_list) == 1:
+                reply_raw = messages_list[-1].content if hasattr(messages_list[-1], "content") else messages_list[-1].get("content", "")
+                feedback_raw = "Evaluator feedback completed."
+            else:
+                reply_raw = "No response generated."
+                feedback_raw = "No feedback generated."
+        except Exception as e:
+            error_str = str(e)
+            if "Recursion limit" in error_str:
+                reply_raw = f"Task reached recursion step limit. Here are the findings generated so far before reaching maximum iterations."
+                feedback_raw = "Execution stopped at safety step limit (20 iterations)."
+            else:
+                reply_raw = f"An issue occurred during task execution: {error_str}"
+                feedback_raw = "Error during execution."
 
         reply_text = extract_text(reply_raw)
         feedback_text = extract_text(feedback_raw).replace('Evaluator Feedback on this answer: ', '')
