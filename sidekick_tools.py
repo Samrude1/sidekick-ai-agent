@@ -101,15 +101,27 @@ async def playwright_tools():
 
 push_count = 0
 
-def push(text: str):
-    """Send a push notification to the user"""
+def push(text: str) -> str:
+    """Send a push notification to the user via Pushover with rate limiting and timeout."""
     global push_count
     if push_count >= 2:
         return "Push limit reached for this session."
     push_count += 1
-    # Note: If Pushover trial is expired, this will log but not buzz
-    requests.post(pushover_url, data = {"token": pushover_token, "user": pushover_user, "message": text})
-    return "success"
+    
+    if not pushover_token or not pushover_user:
+        return "Push notification skipped: Pushover credentials not configured."
+        
+    try:
+        response = requests.post(
+            pushover_url, 
+            data={"token": pushover_token, "user": pushover_user, "message": text},
+            timeout=10
+        )
+        response.raise_for_status()
+        return "success"
+    except requests.RequestException as e:
+        return f"Push notification failed: {e}"
+
 
 
 ALLOWED_MODULES = {

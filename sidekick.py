@@ -1,4 +1,4 @@
-from typing import Annotated
+from typing import Annotated, List, Any, Optional, Dict
 from typing_extensions import TypedDict
 from langgraph.graph import StateGraph, START, END
 from langgraph.graph.message import add_messages
@@ -7,7 +7,6 @@ from langgraph.prebuilt import ToolNode
 from langchain_openai import ChatOpenAI
 from langgraph.checkpoint.memory import MemorySaver
 from langchain_core.messages import AIMessage, HumanMessage, SystemMessage
-from typing import List, Any, Optional, Dict
 from pydantic import BaseModel, Field
 from sidekick_tools import playwright_tools, other_tools
 import uuid
@@ -25,6 +24,7 @@ ORIGINAL_KEYS = {
     "OPENROUTER_API_KEY": os.environ.get("OPENROUTER_API_KEY"),
     "SERPAPI_API_KEY": os.environ.get("SERPAPI_API_KEY"),
     "PUSHOVER_TOKEN": os.environ.get("PUSHOVER_TOKEN"),
+    "PUSHOVER_USER": os.environ.get("PUSHOVER_USER"),
 }
 
 class State(TypedDict):
@@ -42,14 +42,14 @@ class EvaluatorOutput(BaseModel):
         description="True if more input is needed from the user, or clarifications, or the assistant is stuck"
     )
 
-def extract_text(content):
-    """Robust extraction for Gemini's response format to prevent Gradio OSError"""
+
+def extract_text(content: Any) -> str:
+    """Robust extraction for varied LLM message response structures to prevent UI errors."""
     if isinstance(content, str):
         return content
     elif isinstance(content, dict):
         return content.get('text', str(content))
     elif isinstance(content, list):
-        # Handle list of content parts
         texts = []
         for part in content:
             if isinstance(part, dict) and 'text' in part:
@@ -57,8 +57,7 @@ def extract_text(content):
             elif isinstance(part, str):
                 texts.append(part)
         return ' '.join(texts) if texts else str(content)
-    else:
-        return str(content)
+    return str(content)
 
 
 class Sidekick:
@@ -66,7 +65,6 @@ class Sidekick:
         self.worker_llm_with_tools = None
         self.evaluator_llm_with_output = None
         self.tools = None
-        self.llm_with_tools = None
         self.graph = None
         self.sidekick_id = str(uuid.uuid4())
         self.memory = MemorySaver()
@@ -80,7 +78,7 @@ class Sidekick:
         # Grab API key from our secure memory storage
         openrouter_api_key = ORIGINAL_KEYS.get("OPENROUTER_API_KEY")
         
-        # Using a top-tier OpenRouter model for Worker
+        # Using OpenRouter Claude 3.5 Sonnet for Worker
         worker_llm = ChatOpenAI(
             model="anthropic/claude-sonnet-4.5", 
             api_key=openrouter_api_key,
@@ -90,7 +88,7 @@ class Sidekick:
         )
         self.worker_llm_with_tools = worker_llm.bind_tools(self.tools)
         
-        # Using a top-tier OpenRouter model for Evaluator
+        # Using OpenRouter GPT-4o for Evaluator
         evaluator_llm = ChatOpenAI(
             model="openai/gpt-4o", 
             api_key=openrouter_api_key,
@@ -103,7 +101,7 @@ class Sidekick:
         await self.build_graph()
 
         # Security: Hide sensitive API keys from the process environment so the Python REPL cannot read them
-        for key in ["OPENROUTER_API_KEY", "SERPAPI_API_KEY", "PUSHOVER_TOKEN"]:
+        for key in ["OPENROUTER_API_KEY", "SERPAPI_API_KEY", "PUSHOVER_TOKEN", "PUSHOVER_USER"]:
             if key in os.environ:
                 os.environ[key] = "REDACTED_FOR_SECURITY"
 
@@ -132,17 +130,11 @@ class Sidekick:
     {state["feedback_on_work"]}
     With this feedback, please continue the assignment, ensuring that you meet the success criteria or have a question for the user."""
 
-        found_system_message = False
-        messages = list(state["messages"])
-        for message in messages:
-            if isinstance(message, SystemMessage):
-                message.content = system_message
-                found_system_message = True
+        # Construct message list without in-place mutation of state items
+        other_messages = [msg for msg in state["messages"] if not isinstance(msg, SystemMessage)]
+        messages = [SystemMessage(content=system_message)] + other_messages
 
-        if not found_system_message:
-            messages = [SystemMessage(content=system_message)] + messages
-
-        # Invoke the Gemini LLM with tools
+        # Invoke the Worker LLM with tools
         response = self.worker_llm_with_tools.invoke(messages)
 
         return {
@@ -154,20 +146,19 @@ class Sidekick:
 
         if hasattr(last_message, "tool_calls") and last_message.tool_calls:
             return "tools"
-        else:
-            return "evaluator"
+        return "evaluator"
 
     def format_conversation(self, messages: List[Any]) -> str:
-        conversation = "Conversation history:\n\n"
+        lines = ["Conversation history:\n"]
         for message in messages:
             if isinstance(message, HumanMessage):
-                conversation += f"User: {message.content}\n"
+                lines.append(f"User: {message.content}")
             elif isinstance(message, AIMessage):
                 text = extract_text(message.content) or "[Tools use]"
-                conversation += f"Assistant: {text}\n"
-        return conversation
+                lines.append(f"Assistant: {text}")
+        return "\n".join(lines)
 
-    def evaluator(self, state: State) -> State:
+    def evaluator(self, state: State) -> Dict[str, Any]:
         # Extract content securely
         last_response = extract_text(state["messages"][-1].content)
 
@@ -191,7 +182,7 @@ class Sidekick:
 
     Overall you should give the Assistant the benefit of the doubt if they say they've done something. But you should reject if you feel that more work should go into this.
     """
-        if state["feedback_on_work"]:
+        if state.get("feedback_on_work"):
             user_message += f"Also, note that in a prior attempt from the Assistant, you provided this feedback: {state['feedback_on_work']}\n"
             user_message += "If you're seeing the Assistant repeating the same mistakes, then consider responding that user input is required."
 
@@ -215,10 +206,9 @@ class Sidekick:
         return new_state
 
     def route_based_on_evaluation(self, state: State) -> str:
-        if state["success_criteria_met"] or state["user_input_needed"]:
+        if state.get("success_criteria_met") or state.get("user_input_needed"):
             return "END"
-        else:
-            return "worker"
+        return "worker"
 
     async def build_graph(self):
         graph_builder = StateGraph(State)
@@ -238,14 +228,12 @@ class Sidekick:
 
         self.graph = graph_builder.compile(checkpointer=self.memory)
 
-    async def run_superstep(self, message, success_criteria, history):
+    async def run_superstep(self, message: str, success_criteria: Optional[str], history: Optional[str]) -> str:
         config = {
             "configurable": {"thread_id": self.sidekick_id},
             "recursion_limit": 8 
         }
 
-        # Handle history correctly (we'll store raw data in a hidden state)
-        # But for this demo, we'll just use the message
         state = {
             "messages": [HumanMessage(content=message)],
             "success_criteria": success_criteria or "The answer should be clear and accurate",
@@ -256,15 +244,22 @@ class Sidekick:
         
         result = await self.graph.ainvoke(state, config=config)
         
-        # Extract content
-        reply_raw = result["messages"][-2].content
+        # Safely extract worker reply and evaluator feedback
+        messages_list = result.get("messages", [])
+        if len(messages_list) >= 2:
+            reply_raw = messages_list[-2].content if hasattr(messages_list[-2], "content") else messages_list[-2].get("content", "")
+            feedback_raw = messages_list[-1].content if hasattr(messages_list[-1], "content") else messages_list[-1].get("content", "")
+        elif len(messages_list) == 1:
+            reply_raw = messages_list[-1].content if hasattr(messages_list[-1], "content") else messages_list[-1].get("content", "")
+            feedback_raw = "Evaluator feedback completed."
+        else:
+            reply_raw = "No response generated."
+            feedback_raw = "No feedback generated."
+
         reply_text = extract_text(reply_raw)
-        
-        feedback_raw = result["messages"][-1].content
         feedback_text = extract_text(feedback_raw).replace('Evaluator Feedback on this answer: ', '')
         
         # Build the PROFESSIONAL HTML LOGS with XSS prevention
-        # Escape all untrusted/dynamic content before injecting into HTML
         safe_message = html.escape(str(message), quote=True)
         safe_reply = html.escape(str(reply_text), quote=True)
         safe_feedback = html.escape(str(feedback_text), quote=True)
@@ -310,3 +305,4 @@ class Sidekick:
                 asyncio.run(self.browser.close())
                 if self.playwright:
                     asyncio.run(self.playwright.stop())
+

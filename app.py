@@ -3,32 +3,37 @@ import os
 from sidekick import Sidekick
 
 
-async def setup(*args, **kwargs):
+async def setup() -> Sidekick:
+    """Initialize a new Sidekick agent session with browser and tool setup."""
     sk = Sidekick()
     await sk.setup()
     return sk
 
 
-async def process_message(sidekick, message, success_criteria, history, *args, **kwargs):
-    # Pass the instance to running superstep
-    # history is now a raw HTML string
+async def process_message(sidekick: Sidekick, message: str, success_criteria: str, history: str):
+    """Execute a superstep against the Sidekick agent and update the log history."""
+    if not sidekick:
+        sidekick = await setup()
     results = await sidekick.run_superstep(message, success_criteria, history)
     return results, sidekick
 
 
-async def reset(*args, **kwargs):
+async def reset():
+    """Reset the session with a fresh Sidekick agent instance."""
     new_sidekick = Sidekick()
     await new_sidekick.setup()
     return "", "", "", new_sidekick
 
 
-def free_resources(sidekick):
-    print("Cleaning up browser resources...")
-    try:
-        if sidekick:
+def free_resources(sidekick: Sidekick) -> None:
+    """Gracefully free browser and background resources when the session is discarded."""
+    if sidekick:
+        print("Cleaning up agent resources...")
+        try:
             sidekick.cleanup()
-    except Exception as e:
-        print(f"Exception during cleanup: {e}")
+        except Exception as e:
+            print(f"Exception during cleanup: {e}")
+
 
 
 # Custom CSS for the Professional Minimalist Theme
