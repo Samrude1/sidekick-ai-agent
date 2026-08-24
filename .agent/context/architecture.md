@@ -53,9 +53,9 @@ graph TD
   - `success_criteria_met`: Boolean flag controlling workflow termination.
   - `user_input_needed`: Boolean flag when user clarification is requested.
 - **Agents:**
-  - **Worker Agent:** Powered by `anthropic/claude-sonnet-4.5` (via OpenRouter), bound with tool suite.
-  - **Evaluator Agent:** Powered by `openai/gpt-4o` (via OpenRouter), using structured output (`EvaluatorOutput`).
-- **Loop Protection:** Recursion limit hard-capped at 8 iterations.
+  - **Worker Agent:** Powered by `anthropic/claude-3.5-haiku` (via OpenRouter), bound with tool suite.
+  - **Evaluator Agent:** Powered by `openai/gpt-4o-mini` (via OpenRouter), using structured output (`EvaluatorOutput`).
+- **Loop Protection:** Recursion limit set to 20 iterations.
 
 ### 3. Tool & Security Layer (`sidekick_tools.py`)
 - **Enterprise Export Engine:**

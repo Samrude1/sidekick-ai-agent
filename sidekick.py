@@ -79,9 +79,9 @@ class Sidekick:
         # Grab API key from our secure memory storage
         openrouter_api_key = ORIGINAL_KEYS.get("OPENROUTER_API_KEY")
         
-        # Using OpenRouter Claude 3.5 Sonnet for Worker
+        # Using OpenRouter Claude 3.5 Haiku for Worker (Fast, cost-efficient, high-precision tool calling)
         worker_llm = ChatOpenAI(
-            model="anthropic/claude-sonnet-4.5", 
+            model="anthropic/claude-3.5-haiku", 
             api_key=openrouter_api_key,
             base_url="https://openrouter.ai/api/v1",
             max_tokens=4096,
@@ -90,9 +90,9 @@ class Sidekick:
         )
         self.worker_llm_with_tools = worker_llm.bind_tools(self.tools)
         
-        # Using OpenRouter GPT-4o for Evaluator
+        # Using OpenRouter GPT-4o-mini for Evaluator (Fast structured verification at 95% lower cost)
         evaluator_llm = ChatOpenAI(
-            model="openai/gpt-4o", 
+            model="openai/gpt-4o-mini", 
             api_key=openrouter_api_key,
             base_url="https://openrouter.ai/api/v1",
             max_tokens=4096,

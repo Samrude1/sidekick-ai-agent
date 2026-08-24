@@ -7,8 +7,8 @@
 - **Orchestration:** `langgraph` (v0.2+)
 - **LLM Integrations:** `langchain-openai`, `langchain-core`, `langchain-community`, `langchain-experimental`
 - **Models Used via OpenRouter:**
-  - **Worker Agent:** `anthropic/claude-sonnet-4.5`
-  - **Evaluator Agent:** `openai/gpt-4o`
+  - **Worker Agent:** `anthropic/claude-3.5-haiku` (High-speed tool execution & multi-step browsing)
+  - **Evaluator Agent:** `openai/gpt-4o-mini` (Fast structured success verification)
 - **State Checkpointing:** `langgraph.checkpoint.memory.MemorySaver`
 
 ## User Interface & Presentation
