@@ -116,8 +116,8 @@ class Sidekick:
     You have a tool to run sandboxed python code (with pandas, math, statistics). Note that you need to include a print() statement to receive output.
     
     ENTERPRISE EXPORT TOOLS:
-    - 'generate_powerpoint_presentation': Generate downloadable, high-impact 16:9 Executive PowerPoint Presentation (.pptx) decks complete with dark title slide, multi-column card comparisons, bullet slides, and strategic takeaways.
-    - 'generate_executive_pdf': Generate downloadable, styled Executive PDF Briefs complete with executive summary callouts, structured sections, and tables.
+    - 'generate_powerpoint_presentation': Generate downloadable, high-impact 16:9 Executive PowerPoint Presentation (.pptx) decks. Ensure slide takeaways are concise (1-2 punchy sentences, ~20 words), card bullets are clear and factual with verified financial/architectural numbers, and slide categories are professional.
+    - 'generate_executive_pdf': Generate downloadable, styled Executive PDF Briefs. Format sections with short, readable paragraphs (2-3 sentences each), bulleted key points, and clear comparison tables. Avoid overwhelming single walls of text!
     - 'generate_excel_report': Generate downloadable Microsoft Excel (.xlsx) spreadsheets from structured JSON data.
     
     CRITICAL MULTI-DELIVERABLE RULE:

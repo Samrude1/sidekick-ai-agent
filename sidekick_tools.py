@@ -422,9 +422,9 @@ def create_executive_pdf(title: str, summary: str, sections_json: str, filename:
             'SectionH2',
             parent=styles['Heading2'],
             fontName='Helvetica-Bold',
-            fontSize=14,
-            leading=18,
-            textColor=colors.HexColor('#111827'),
+            fontSize=13,
+            leading=17,
+            textColor=colors.HexColor('#0F172A'),
             spaceBefore=14,
             spaceAfter=8
         )
@@ -433,18 +433,29 @@ def create_executive_pdf(title: str, summary: str, sections_json: str, filename:
             'BodyDark',
             parent=styles['BodyText'],
             fontName='Helvetica',
-            fontSize=10,
+            fontSize=9.5,
+            leading=14.5,
+            textColor=colors.HexColor('#1E293B'),
+            spaceAfter=8
+        )
+
+        bullet_style = ParagraphStyle(
+            'BulletDark',
+            parent=styles['Normal'],
+            fontName='Helvetica',
+            fontSize=9.5,
             leading=14,
-            textColor=colors.HexColor('#374151'),
-            spaceAfter=6
+            textColor=colors.HexColor('#334155'),
+            leftIndent=14,
+            spaceAfter=4
         )
 
         summary_box_style = ParagraphStyle(
             'SummaryText',
             parent=styles['Normal'],
             fontName='Helvetica',
-            fontSize=10.5,
-            leading=15,
+            fontSize=9.5,
+            leading=14.5,
             textColor=colors.HexColor('#065F46')
         )
 
@@ -454,7 +465,7 @@ def create_executive_pdf(title: str, summary: str, sections_json: str, filename:
         story.append(Paragraph(title, title_style))
         current_date = datetime.now().strftime("%B %d, %Y - %H:%M")
         story.append(Paragraph(f"Sidekick Executive Intelligence Brief &bull; Generated: {current_date}", meta_style))
-        story.append(HRFlowable(width="100%", thickness=1, color=colors.HexColor('#E5E7EB'), spaceAfter=14))
+        story.append(HRFlowable(width="100%", thickness=1, color=colors.HexColor('#E2E8F0'), spaceAfter=14))
 
         # Executive Summary Callout Box
         if summary:
@@ -464,11 +475,11 @@ def create_executive_pdf(title: str, summary: str, sections_json: str, filename:
             summary_table.setStyle(TableStyle([
                 ('BACKGROUND', (0, 0), (-1, -1), colors.HexColor('#F0FDF4')),
                 ('BOX', (0, 0), (-1, -1), 1.5, colors.HexColor('#10B981')),
-                ('PADDING', (0, 0), (-1, -1), 12),
+                ('PADDING', (0, 0), (-1, -1), 10),
                 ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
             ]))
             story.append(summary_table)
-            story.append(Spacer(1, 14))
+            story.append(Spacer(1, 10))
 
         # Parse Sections
         sections = []
@@ -487,7 +498,12 @@ def create_executive_pdf(title: str, summary: str, sections_json: str, filename:
 
                     story.append(Paragraph(h, h2_style))
                     if t:
-                        story.append(Paragraph(t.replace("\n", "<br/>"), body_style))
+                        paragraphs = [p.strip() for p in t.split("\n") if p.strip()]
+                        for p_item in paragraphs:
+                            if p_item.startswith("•") or p_item.startswith("-") or p_item.startswith("*"):
+                                story.append(Paragraph(f"&bull; {p_item.lstrip('•-* ')}", bullet_style))
+                            else:
+                                story.append(Paragraph(p_item, body_style))
                     
                     if table_data and isinstance(table_data, list) and len(table_data) > 0:
                         # Build formatted table
@@ -495,21 +511,25 @@ def create_executive_pdf(title: str, summary: str, sections_json: str, filename:
                         # If list of dicts:
                         if isinstance(table_data[0], dict):
                             cols = list(table_data[0].keys())
-                            t_rows.append([Paragraph(f"<b>{c}</b>", body_style) for c in cols])
+                            t_rows.append([Paragraph(f"<b><font color='white'>{c}</font></b>", body_style) for c in cols])
                             for r in table_data:
                                 t_rows.append([Paragraph(str(r.get(c, '')), body_style) for c in cols])
                         # If list of lists:
                         elif isinstance(table_data[0], list):
                             for idx, row in enumerate(table_data):
                                 is_head = (idx == 0)
-                                t_rows.append([Paragraph(f"<b>{cell}</b>" if is_head else str(cell), body_style) for cell in row])
+                                if is_head:
+                                    t_rows.append([Paragraph(f"<b><font color='white'>{cell}</font></b>", body_style) for cell in row])
+                                else:
+                                    t_rows.append([Paragraph(str(cell), body_style) for cell in row])
 
                         if t_rows:
                             col_w = 530 / max(len(t_rows[0]), 1)
                             pdf_table = Table(t_rows, colWidths=[col_w] * len(t_rows[0]))
                             pdf_table.setStyle(TableStyle([
-                                ('BACKGROUND', (0, 0), (-1, 0), colors.HexColor('#F3F4F6')),
-                                ('GRID', (0, 0), (-1, -1), 0.5, colors.HexColor('#E5E7EB')),
+                                ('BACKGROUND', (0, 0), (-1, 0), colors.HexColor('#0F172A')),
+                                ('ROWBACKGROUNDS', (0, 1), (-1, -1), [colors.HexColor('#FFFFFF'), colors.HexColor('#F8FAFC')]),
+                                ('GRID', (0, 0), (-1, -1), 0.5, colors.HexColor('#E2E8F0')),
                                 ('PADDING', (0, 0), (-1, -1), 6),
                                 ('VALIGN', (0, 0), (-1, -1), 'TOP'),
                             ]))
@@ -546,47 +566,47 @@ def create_powerpoint_deck(title: str, subtitle: str, slides_json: str, filename
         else:
             slides_data = slides_json or []
 
-        # 1. Title Slide (Executive Dark Slate Theme)
+        # 1. Title Slide (Unified Corporate Executive Theme)
         title_slide = prs.slides.add_slide(blank_layout)
-        bg = title_slide.shapes.add_shape(MSO_SHAPE.RECTANGLE, 0, 0, Inches(13.333), Inches(7.5))
-        bg.fill.solid()
-        bg.fill.fore_color.rgb = RGBColor(15, 23, 42) # Slate 900
-        bg.line.fill.background()
+        
+        # Center Hero Card
+        t_card = title_slide.shapes.add_shape(MSO_SHAPE.RECTANGLE, Inches(1.2), Inches(1.5), Inches(10.933), Inches(4.5))
+        t_card.fill.solid()
+        t_card.fill.fore_color.rgb = RGBColor(15, 23, 42) # Slate 900
+        t_card.line.color.rgb = RGBColor(16, 185, 129) # Emerald 500
+        t_card.line.width = Pt(2.0)
 
-        # Accent vertical bar
-        accent = title_slide.shapes.add_shape(MSO_SHAPE.RECTANGLE, Inches(1.2), Inches(2.0), Inches(0.12), Inches(3.2))
-        accent.fill.solid()
-        accent.fill.fore_color.rgb = RGBColor(16, 185, 129) # Emerald 500
-        accent.line.fill.background()
-
-        # Title Box
-        title_box = title_slide.shapes.add_textbox(Inches(1.6), Inches(2.0), Inches(10.5), Inches(2.0))
-        tf = title_box.text_frame
+        tf = t_card.text_frame
         tf.word_wrap = True
-        p_title = tf.paragraphs[0]
+        tf.margin_left = Inches(0.6)
+        tf.margin_top = Inches(0.6)
+
+        p_kicker = tf.paragraphs[0]
+        p_kicker.text = "EXECUTIVE INTELLIGENCE BRIEFING"
+        p_kicker.font.size = Pt(12)
+        p_kicker.font.bold = True
+        p_kicker.font.color.rgb = RGBColor(16, 185, 129)
+
+        p_title = tf.add_paragraph()
         p_title.text = title
-        p_title.font.size = Pt(36)
+        p_title.font.size = Pt(32)
         p_title.font.bold = True
         p_title.font.color.rgb = RGBColor(255, 255, 255)
+        p_title.space_before = Pt(8)
 
-        # Subtitle Box
-        sub_box = title_slide.shapes.add_textbox(Inches(1.6), Inches(4.0), Inches(10.5), Inches(1.2))
-        sub_tf = sub_box.text_frame
-        sub_tf.word_wrap = True
-        p_sub = sub_tf.paragraphs[0]
-        p_sub.text = subtitle or "Strategic Executive Presentation"
-        p_sub.font.size = Pt(20)
-        p_sub.font.color.rgb = RGBColor(148, 163, 184) # Slate 400
+        p_sub = tf.add_paragraph()
+        p_sub.text = subtitle or "Strategic Executive Due Diligence"
+        p_sub.font.size = Pt(18)
+        p_sub.font.color.rgb = RGBColor(148, 163, 184)
+        p_sub.space_before = Pt(8)
 
-        # Footer badge
-        foot_box = title_slide.shapes.add_textbox(Inches(1.6), Inches(5.6), Inches(10.5), Inches(0.6))
-        foot_tf = foot_box.text_frame
-        p_foot = foot_tf.paragraphs[0]
+        p_meta = tf.add_paragraph()
         cur_date = datetime.now().strftime("%B %d, %Y")
-        p_foot.text = f"⚡ Sidekick Executive Intelligence • Generated {cur_date}"
-        p_foot.font.size = Pt(13)
-        p_foot.font.bold = True
-        p_foot.font.color.rgb = RGBColor(16, 185, 129)
+        p_meta.text = f"⚡ Sidekick Executive Intelligence • {cur_date}"
+        p_meta.font.size = Pt(11)
+        p_meta.font.bold = True
+        p_meta.font.color.rgb = RGBColor(16, 185, 129)
+        p_meta.space_before = Pt(20)
 
         # 2. Content Slides (Corporate Clean Light Theme)
         for s_idx, slide_info in enumerate(slides_data):
@@ -595,13 +615,13 @@ def create_powerpoint_deck(title: str, subtitle: str, slides_json: str, filename
             category = slide_info.get("category", "EXECUTIVE BRIEFING")
 
             # Header Banner
-            head_box = c_slide.shapes.add_textbox(Inches(0.8), Inches(0.4), Inches(11.733), Inches(0.95))
+            head_box = c_slide.shapes.add_textbox(Inches(0.8), Inches(0.35), Inches(11.733), Inches(0.95))
             h_tf = head_box.text_frame
             h_tf.word_wrap = True
             
             p_cat = h_tf.paragraphs[0]
             p_cat.text = category.upper()
-            p_cat.font.size = Pt(10.5)
+            p_cat.font.size = Pt(10)
             p_cat.font.bold = True
             p_cat.font.color.rgb = RGBColor(5, 150, 105) # Emerald 600
 
@@ -612,7 +632,7 @@ def create_powerpoint_deck(title: str, subtitle: str, slides_json: str, filename
             p_h.font.color.rgb = RGBColor(15, 23, 42)
 
             # Divider line
-            div = c_slide.shapes.add_shape(MSO_SHAPE.RECTANGLE, Inches(0.8), Inches(1.42), Inches(11.733), Inches(0.015))
+            div = c_slide.shapes.add_shape(MSO_SHAPE.RECTANGLE, Inches(0.8), Inches(1.35), Inches(11.733), Inches(0.015))
             div.fill.solid()
             div.fill.fore_color.rgb = RGBColor(226, 232, 240)
             div.line.fill.background()
@@ -624,8 +644,8 @@ def create_powerpoint_deck(title: str, subtitle: str, slides_json: str, filename
                 total_w = 11.733
                 spacing = 0.3
                 card_w = (total_w - (num_cards - 1) * spacing) / num_cards
-                card_h = Inches(4.9)
-                top_y = Inches(1.55)
+                card_h = Inches(4.75)
+                top_y = Inches(1.5)
 
                 for c_i, card in enumerate(cards[:num_cards]):
                     left_x = Inches(0.8 + c_i * (card_w + spacing))
@@ -637,8 +657,8 @@ def create_powerpoint_deck(title: str, subtitle: str, slides_json: str, filename
                     c_box.line.color.rgb = RGBColor(226, 232, 240) # Slate 200
                     c_box.line.width = Pt(1.0)
 
-                    # Card Header Bar (Crisp corporate header strip)
-                    c_head = c_slide.shapes.add_shape(MSO_SHAPE.RECTANGLE, left_x, top_y, Inches(card_w), Inches(0.85))
+                    # Card Header Bar
+                    c_head = c_slide.shapes.add_shape(MSO_SHAPE.RECTANGLE, left_x, top_y, Inches(card_w), Inches(0.75))
                     c_head.fill.solid()
                     c_head.fill.fore_color.rgb = RGBColor(241, 245, 249) # Slate 100
                     c_head.line.color.rgb = RGBColor(226, 232, 240)
@@ -647,22 +667,22 @@ def create_powerpoint_deck(title: str, subtitle: str, slides_json: str, filename
                     c_tf = c_head.text_frame
                     c_tf.word_wrap = True
                     c_tf.margin_left = Inches(0.18)
-                    c_tf.margin_top = Inches(0.12)
+                    c_tf.margin_top = Inches(0.1)
 
                     p_ctitle = c_tf.paragraphs[0]
                     p_ctitle.text = card.get("title", f"Item {c_i + 1}")
-                    p_ctitle.font.size = Pt(16)
+                    p_ctitle.font.size = Pt(15)
                     p_ctitle.font.bold = True
                     p_ctitle.font.color.rgb = RGBColor(15, 23, 42)
 
                     if card.get("subtitle"):
                         p_csub = c_tf.add_paragraph()
                         p_csub.text = card.get("subtitle")
-                        p_csub.font.size = Pt(11)
+                        p_csub.font.size = Pt(10.5)
                         p_csub.font.color.rgb = RGBColor(100, 116, 139)
 
                     # Card Body Text / Bullets
-                    b_box = c_slide.shapes.add_textbox(left_x, top_y + Inches(0.95), Inches(card_w), Inches(3.1))
+                    b_box = c_slide.shapes.add_textbox(left_x, top_y + Inches(0.8), Inches(card_w), Inches(2.9))
                     b_tf = b_box.text_frame
                     b_tf.word_wrap = True
                     b_tf.margin_left = Inches(0.18)
@@ -673,13 +693,13 @@ def create_powerpoint_deck(title: str, subtitle: str, slides_json: str, filename
                     for p_idx, point in enumerate(points):
                         p_pt = b_tf.paragraphs[0] if p_idx == 0 else b_tf.add_paragraph()
                         p_pt.text = f"•  {point}"
-                        p_pt.font.size = Pt(12)
+                        p_pt.font.size = Pt(11)
                         p_pt.font.color.rgb = RGBColor(30, 41, 59)
-                        p_pt.space_after = Pt(6)
+                        p_pt.space_after = Pt(4)
 
                     # Card Bottom Highlight Badge
                     if card.get("highlight"):
-                        hl_box = c_slide.shapes.add_shape(MSO_SHAPE.RECTANGLE, left_x + Inches(0.15), top_y + Inches(4.2), Inches(card_w - 0.3), Inches(0.55))
+                        hl_box = c_slide.shapes.add_shape(MSO_SHAPE.RECTANGLE, left_x + Inches(0.15), top_y + Inches(3.85), Inches(card_w - 0.3), Inches(0.45))
                         hl_box.fill.solid()
                         hl_box.fill.fore_color.rgb = RGBColor(236, 253, 245) # Emerald 50
                         hl_box.line.color.rgb = RGBColor(110, 231, 183) # Emerald 300
@@ -688,16 +708,16 @@ def create_powerpoint_deck(title: str, subtitle: str, slides_json: str, filename
                         hl_tf = hl_box.text_frame
                         hl_tf.word_wrap = True
                         hl_tf.margin_left = Inches(0.1)
-                        hl_tf.margin_top = Inches(0.08)
+                        hl_tf.margin_top = Inches(0.06)
                         p_hl = hl_tf.paragraphs[0]
                         p_hl.text = f"★ {card.get('highlight')}"
-                        p_hl.font.size = Pt(11)
+                        p_hl.font.size = Pt(10)
                         p_hl.font.bold = True
                         p_hl.font.color.rgb = RGBColor(4, 120, 87)
 
             # Or render Bullets & Text
             elif slide_info.get("bullets"):
-                b_box = c_slide.shapes.add_textbox(Inches(0.8), Inches(1.7), Inches(11.733), Inches(4.5))
+                b_box = c_slide.shapes.add_textbox(Inches(0.8), Inches(1.55), Inches(11.733), Inches(4.7))
                 b_tf = b_box.text_frame
                 b_tf.word_wrap = True
                 
@@ -705,13 +725,13 @@ def create_powerpoint_deck(title: str, subtitle: str, slides_json: str, filename
                 for b_i, bullet in enumerate(bullets):
                     p_b = b_tf.paragraphs[0] if b_i == 0 else b_tf.add_paragraph()
                     p_b.text = f"•  {bullet}"
-                    p_b.font.size = Pt(15)
+                    p_b.font.size = Pt(14)
                     p_b.font.color.rgb = RGBColor(30, 41, 59)
-                    p_b.space_after = Pt(10)
+                    p_b.space_after = Pt(8)
 
-            # Bottom Strategic Takeaway Bar if present
+            # Bottom Strategic Takeaway Bar (Padded, no overflow)
             if slide_info.get("takeaway"):
-                t_box = c_slide.shapes.add_shape(MSO_SHAPE.RECTANGLE, Inches(0.8), Inches(6.55), Inches(11.733), Inches(0.58))
+                t_box = c_slide.shapes.add_shape(MSO_SHAPE.RECTANGLE, Inches(0.8), Inches(6.45), Inches(11.733), Inches(0.75))
                 t_box.fill.solid()
                 t_box.fill.fore_color.rgb = RGBColor(240, 253, 244) # Emerald 50
                 t_box.line.color.rgb = RGBColor(16, 185, 129) # Emerald 500
@@ -720,10 +740,11 @@ def create_powerpoint_deck(title: str, subtitle: str, slides_json: str, filename
                 t_tf = t_box.text_frame
                 t_tf.word_wrap = True
                 t_tf.margin_left = Inches(0.15)
+                t_tf.margin_right = Inches(0.15)
                 t_tf.margin_top = Inches(0.08)
                 p_t = t_tf.paragraphs[0]
                 p_t.text = f"💡 STRATEGIC TAKEAWAY: {slide_info.get('takeaway')}"
-                p_t.font.size = Pt(11.5)
+                p_t.font.size = Pt(10)
                 p_t.font.bold = True
                 p_t.font.color.rgb = RGBColor(6, 95, 70)
 
