@@ -58,6 +58,19 @@ h1 {
     font-size: 2.2rem !important;
 }
 
+#header p, #header em {
+    color: #4b5563 !important;
+    font-style: normal !important;
+    font-weight: 500 !important;
+    font-size: 1rem !important;
+    margin-top: 4px !important;
+}
+
+/* Hide Gradio default footer (API links, branding) */
+footer {
+    display: none !important;
+}
+
 /* Custom Log Window Styling - THE PAKKOKEINO */
 #log-window {
     background: #ffffff !important;
@@ -85,7 +98,7 @@ h1 {
 }
 
 .log-time {
-    color: #9ca3af;
+    color: #6b7280;
 }
 
 .log-role {
@@ -96,23 +109,26 @@ h1 {
     border-radius: 4px;
 }
 
-.role-user { color: #4b5563; background: #f3f4f6; }
+.role-user { color: #374151; background: #f3f4f6; }
 .role-agent { color: #111827; background: #e5e7eb; border-left: 3px solid #111827; }
-.role-eval { color: #059669; background: #ecfdf5; }
+.role-eval { color: #047857; background: #ecfdf5; font-weight: 700; }
 
 .log-content {
     font-size: 0.95rem;
     line-height: 1.6;
-    color: #374151;
+    color: #1f2937;
     white-space: pre-wrap;
 }
 
 .feedback-box {
     font-style: italic;
     color: #065f46;
-    border-left: 2px solid #10b981;
+    border-left: 3px solid #10b981;
     padding-left: 15px;
     margin-top: 10px;
+    background: #f0fdf4;
+    padding: 10px 15px;
+    border-radius: 0 6px 6px 0;
 }
 
 @keyframes fadeIn {
@@ -123,6 +139,17 @@ h1 {
 /* Inputs & Buttons */
 .left-panel {
     margin-right: 15px !important;
+}
+
+label span {
+    color: #111827 !important;
+    font-weight: 600 !important;
+    font-size: 0.9rem !important;
+}
+
+textarea, input {
+    color: #111827 !important;
+    font-size: 0.95rem !important;
 }
 
 .gr-group {
@@ -136,7 +163,7 @@ button.primary {
     background: #111827 !important;
     color: #ffffff !important;
     border-radius: 6px !important;
-    font-weight: 500 !important;
+    font-weight: 600 !important;
     padding: 10px 20px !important;
 }
 
@@ -147,9 +174,18 @@ button.primary:hover {
 
 .reset-btn {
     min-width: 140px !important;
-    background: transparent !important;
+    background: #f9fafb !important;
+    color: #374151 !important;
     border: 1px solid #d1d5db !important;
-    margin-top: 25px !important;
+    margin-top: 15px !important;
+    font-weight: 600 !important;
+    transition: all 0.2s ease !important;
+}
+
+.reset-btn:hover {
+    background: #e5e7eb !important;
+    color: #111827 !important;
+    border-color: #9ca3af !important;
 }
 
 /* Capabilities Section */
@@ -198,8 +234,8 @@ button.primary:hover {
 
 .skill-info p {
     margin: 2px 0 0 0 !important;
-    font-size: 0.8rem !important;
-    color: #6b7280 !important;
+    font-size: 0.82rem !important;
+    color: #4b5563 !important;
     line-height: 1.4 !important;
 }
 """
@@ -237,13 +273,13 @@ with gr.Blocks(title="Sidekick AI", theme=gr.themes.Base(primary_hue="slate", ne
                     label="Requirements",
                     lines=6,
                     placeholder="What should I do for you?",
-                    value="Find me the top 3 best-rated gyms in Vantaa, Finland."
+                    value="Conduct a competitive market and architecture analysis of the top 3 Enterprise AI Agent frameworks (e.g., LangGraph, AutoGen, CrewAI). Compare their orchestration models, production scalability, and security posture."
                 )
                 success_criteria = gr.Textbox(
                     label="Success Criteria",
                     lines=3,
                     placeholder="Define your success criteria",
-                    value="Provide a list of 3 gyms with their address and average rating."
+                    value="Provide an executive comparison matrix with strengths, trade-offs, and an actionable strategic recommendation for enterprise deployment."
                 )
                 go_button = gr.Button("Execute Task", variant="primary")
             
@@ -288,7 +324,7 @@ with gr.Blocks(title="Sidekick AI", theme=gr.themes.Base(primary_hue="slate", ne
             </div>
             """)
 
-            gr.HTML("<div style='padding: 15px; margin-top: 15px; background: #ffffff; border: 1px solid #e5e7eb; border-radius: 8px;'><p style='font-size: 0.88em; color: #6b7280; margin: 0; line-height: 1.5;'><i>Note: These are sample queries for the demo project. Feel free to replace them with your own tasks!</i></p></div>")
+            gr.HTML("<div style='padding: 14px 16px; margin-top: 15px; background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px;'><p style='font-size: 0.85rem; color: #374151; margin: 0; line-height: 1.5;'>💡 <strong>Enterprise Demo:</strong> Test complex cross-functional research tasks, multi-step browser automation, or custom data analysis workflows.</p></div>")
 
         with gr.Column(scale=3):
             # THE PAKKOKEINO: Custom HTML instead of Gr.Chatbot
@@ -311,6 +347,7 @@ with gr.Blocks(title="Sidekick AI", theme=gr.themes.Base(primary_hue="slate", ne
 if __name__ == "__main__":
     ui.queue(default_concurrency_limit=2, max_size=10).launch(
         show_error=True,
+        show_api=False,
         share=False,
         ssr_mode=False
     )
