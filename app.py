@@ -305,11 +305,35 @@ button.primary:hover {
     border-color: #9ca3af !important;
 }
 
-#download-center {
-    margin-top: 14px !important;
+#download-center,
+#download-center .file-preview-holder,
+#download-center .file-item,
+#download-center .file-parts,
+#download-center .file,
+#download-center table,
+#download-center tbody,
+#download-center tr,
+#download-center td {
     background: #ffffff !important;
-    border: 1px solid #e5e7eb !important;
-    border-radius: 8px !important;
+    background-color: #ffffff !important;
+    color: #111827 !important;
+    border-color: #e5e7eb !important;
+}
+
+#download-center .file-name,
+#download-center .file-size,
+#download-center a,
+#download-center span,
+#download-center p {
+    color: #111827 !important;
+    font-weight: 500 !important;
+}
+
+#download-center .download-button,
+#download-center button,
+#download-center svg {
+    color: #111827 !important;
+    fill: #111827 !important;
 }
 
 .section-title {

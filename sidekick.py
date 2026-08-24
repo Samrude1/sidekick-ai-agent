@@ -183,9 +183,11 @@ class Sidekick:
     {last_response}
 
     Respond with your feedback, and decide if the success criteria is met by this response.
-    Also, decide if more user input is required, either because the assistant has a question, needs clarification, or seems to be stuck and unable to answer without help.
-
-    Overall you should give the Assistant the benefit of the doubt if they say they've done something. But you should reject if you feel that more work should go into this.
+    
+    EVALUATION GUIDELINES:
+    1. If the assistant provided the requested analysis and/or called tools to generate requested deliverables (e.g. Excel .xlsx or PDF .pdf), mark success_criteria_met: True.
+    2. Give the assistant the benefit of the doubt once deliverables and summary are provided. Do NOT keep looping if the primary goal is achieved.
+    3. Only reject (success_criteria_met: False) if the assistant failed to perform the task or produced an empty response.
     """
         if state.get("feedback_on_work"):
             user_message += f"Also, note that in a prior attempt from the Assistant, you provided this feedback: {state['feedback_on_work']}\n"
