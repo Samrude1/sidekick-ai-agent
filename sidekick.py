@@ -79,9 +79,9 @@ class Sidekick:
         # Grab API key from our secure memory storage
         openrouter_api_key = ORIGINAL_KEYS.get("OPENROUTER_API_KEY")
         
-        # Using OpenRouter Claude 3.5 Haiku for Worker (Fast, cost-efficient, high-precision tool calling)
+        # Using OpenRouter Claude Haiku 4.5 for Worker (Fast, cost-efficient, high-precision tool calling)
         worker_llm = ChatOpenAI(
-            model="anthropic/claude-3.5-haiku", 
+            model="anthropic/claude-haiku-4.5", 
             api_key=openrouter_api_key,
             base_url="https://openrouter.ai/api/v1",
             max_tokens=4096,
