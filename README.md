@@ -1,14 +1,3 @@
----
-title: Sidekick AI
-emoji: ⚡
-colorFrom: blue
-colorTo: slate
-sdk: gradio
-sdk_version: 5.27.0
-python_version: 3.13
-app_file: app.py
-pinned: false
----
 
 # ⚡ Sidekick AI Agent (Enterprise Edition)
 
