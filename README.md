@@ -2,7 +2,7 @@
 title: Sidekick AI
 emoji: ⚡
 colorFrom: blue
-colorTo: slate
+colorTo: indigo
 sdk: gradio
 sdk_version: 5.27.0
 python_version: 3.11
