@@ -1,5 +1,11 @@
 import gradio as gr
 import os
+import sys
+
+# Force line buffering so container logs show stdout immediately
+if hasattr(sys.stdout, "reconfigure"):
+    sys.stdout.reconfigure(line_buffering=True)
+
 from sidekick import Sidekick
 from session_manager import cleanup_all_stale_sessions, list_session_files, cleanup_session_dir
 
@@ -361,8 +367,9 @@ button.primary:hover {
 
 # Startup check for Hugging Face
 if os.environ.get("SPACE_ID"):
-    print("Detected Hugging Face environment. Ensuring Playwright is installed...")
+    print("[HF] Detected Hugging Face environment. Ensuring Playwright Chromium is installed...", flush=True)
     os.system("playwright install chromium")
+    print("[HF] Playwright Chromium ready.", flush=True)
 
 head_html = """
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -505,7 +512,11 @@ with gr.Blocks(title="Sidekick AI", theme=gr.themes.Base(primary_hue="slate", ne
 
 
 if __name__ == "__main__":
+    port = int(os.environ.get("PORT", 7860))
+    print(f"Starting Sidekick Gradio UI on 0.0.0.0:{port}...", flush=True)
     ui.queue(default_concurrency_limit=2, max_size=10).launch(
+        server_name="0.0.0.0",
+        server_port=port,
         show_error=True,
         show_api=False,
         share=False,
